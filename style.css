@@ -1,0 +1,96 @@
+/* Custom styles beyond Tailwind */
+
+/* Add animation for cell clicks */
+.cell {
+    transition: all 0.2s ease-in-out;
+}
+
+.cell:active {
+    transform: scale(0.95);
+}
+
+/* Add hover effect for empty cells only */
+.cell:empty:hover {
+    background-color: #f8fafc !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Custom animation for winning cells */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.bg-green-200 {
+    animation: pulse 1s infinite;
+}
+
+/* Notification toast animation */
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.notification-show {
+    animation: slideUp 0.3s forwards;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Disable cells when it's not your turn */
+.cell.disabled {
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+/* Connection status indicators */
+.connection-online .dot {
+    background-color: #10b981;
+}
+
+.connection-offline .dot {
+    background-color: #ef4444;
+}
+
+/* Screen transitions */
+.screen-transition {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.screen-transition.hidden {
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+}
+
+/* Copy button animation */
+@keyframes copySuccess {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.copy-success {
+    animation: copySuccess 0.3s forwards;
+    background-color: #10b981 !important;
+    color: white !important;
+}

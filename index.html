@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe Online</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-md w-full" >
+        <!-- Welcome Screen -->
+        <div id="welcome-screen" class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-2xl font-bold text-center mb-6">Welcome to Tic Tac Toe</h2>
+            
+            <div class="mb-4">
+                <label for="username-input" class="block text-gray-700 mb-2">Enter your username:</label>
+                <input type="text" id="username-input" placeholder="Username" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            
+            <button id="enter-game-btn" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-lg transition-colors text-lg font-semibold">
+                Enter Game
+            </button>
+        </div>
+        
+        <!-- Home Screen -->
+        <div id="home-screen" class="bg-white p-6 rounded-lg shadow-md hidden">
+            <h2 class="text-2xl font-bold text-center mb-6">Online Multiplayer</h2>
+            
+            <!-- User Stats -->
+            <div id="user-stats" class="mb-6 p-3 bg-gray-50 rounded-lg hidden">
+                <h3 class="font-bold text-lg mb-2">
+                    Welcome, <span id="username-display">Player</span>!
+                </h3>
+                <div class="flex justify-between">
+                    <div>
+                        <span class="font-semibold">Wins:</span>
+                        <span id="user-wins">0</span>
+                    </div>
+                    <div>
+                        <span class="font-semibold">Losses:</span>
+                        <span id="user-losses">0</span>
+                    </div>
+                    <div>
+                        <span class="font-semibold">Draws:</span>
+                        <span id="user-draws">0</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-6">
+                <button id="create-room-btn" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-lg transition-colors text-lg font-semibold">
+                    Create New Game
+                </button>
+            </div>
+            
+            <div class="text-center mb-4">
+                <span class="text-gray-500">- OR -</span>
+            </div>
+            
+            <div class="mb-4">
+                <label for="room-id-input" class="block text-gray-700 mb-2">Join with Room ID:</label>
+                <input type="text" id="room-id-input" placeholder="Enter Room ID" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            
+            <button id="join-room-btn" class="w-full bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg transition-colors text-lg font-semibold">
+                Join Game
+            </button>
+            
+            <div class="mt-6">
+                <button id="view-leaderboard-btn" class="w-full bg-gray-500 hover:bg-gray-600 text-white py-3 px-4 rounded-lg transition-colors text-lg font-semibold">
+                    View Leaderboard
+                </button>
+            </div>
+            
+            <div id="connection-status" class="mt-4 text-center text-sm text-gray-500">
+                Connecting to server...
+            </div>
+        </div>
+        
+        <!-- Leaderboard Screen -->
+        <div id="leaderboard-screen" class="bg-white p-6 rounded-lg shadow-md hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Leaderboard</h2>
+                <button id="back-to-home-btn" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded transition-colors">
+                    Back to Home
+                </button>
+            </div>
+            
+            <div id="leaderboard-content" class="bg-gray-50 rounded-lg p-3 max-h-[500px] overflow-y-auto">
+                <div class="text-center text-gray-500 py-2">Loading leaderboard...</div>
+            </div>
+        </div>
+        
+        <!-- Waiting Screen -->
+        <div id="waiting-screen" class="bg-white p-6 rounded-lg shadow-md hidden">
+            <h2 class="text-2xl font-bold text-center mb-6">Waiting for Opponent</h2>
+            
+            <div class="mb-6 text-center">
+                <p class="mb-2">Share this room ID with a friend:</p>
+                <div class="flex items-center justify-center">
+                    <span id="room-id-display" class="text-xl font-mono bg-gray-100 px-4 py-2 rounded mr-2"></span>
+                    <button id="copy-room-id" class="bg-gray-200 hover:bg-gray-300 p-2 rounded">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="text-center mb-6">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+                <p class="mt-2 text-gray-600">Waiting for someone to join...</p>
+            </div>
+            
+            <button id="cancel-wait-btn" class="w-full bg-red-500 hover:bg-red-600 text-white py-3 px-4 rounded-lg transition-colors text-lg font-semibold">
+                Cancel
+            </button>
+        </div>
+        
+        <!-- Game Screen -->
+        <div id="game-screen" class="bg-white p-6 rounded-lg shadow-md hidden">
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <span class="text-sm text-gray-500">Room:</span>
+                    <span id="game-room-id" class="font-mono text-sm"></span>
+                </div>
+                <div id="connection-badge" class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    <span class="h-2 w-2 rounded-full bg-green-500 mr-1"></span>Connected
+                </div>
+            </div>
+            
+            <div class="flex justify-between items-center mb-4">
+                <div class="flex items-center">
+                    <div class="text-blue-600 font-bold mr-1">X:</div>
+                    <div id="player-x-name" class="mr-1">Player X</div>
+                    <span id="you-badge-x" class="hidden bg-gray-200 text-xs px-1 rounded">You</span>
+                </div>
+                <div class="text-center font-bold">
+                    <span id="score-x">0</span>
+                    <span class="mx-1">-</span>
+                    <span id="score-o">0</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="text-red-600 font-bold mr-1">O:</div>
+                    <div id="player-o-name" class="mr-1">Player O</div>
+                    <span id="you-badge-o" class="hidden bg-gray-200 text-xs px-1 rounded">You</span>
+                </div>
+            </div>
+            
+            <div id="status-message" class="text-center mb-2 h-6 font-semibold"></div>
+            <div id="player-turn" class="text-center mb-4 text-blue-600">Player X's turn</div>
+            
+            <div class="grid grid-cols-3 gap-2 mb-4">
+                <div class="cell bg-white h-24 flex items-center justify-center text-4xl font-bold rounded shadow cursor-pointer" data-index="0"></div>
+                <div class="cell bg-white h-24 flex items-center justify-center text-4xl font-bold rounded shadow cursor-pointer" data-index="1"></div>
+                <div class="cell bg-white h-24 flex items-center justify-center text-4xl font-bold rounded shadow cursor-pointer" data-index="2"></div>
+                <div class="cell bg-white h-24 flex items-center justify-center text-4xl font-bold rounded shadow cursor-pointer" data-index="3"></div>
+                <div class="cell bg-white h-24 flex items-center justify-center text-4xl font-bold rounded shadow cursor-pointer" data-index="4"></div>
+                <div class="cell bg-white h-24 flex items-center justify-center text-4xl font-bold rounded shadow cursor-pointer" data-index="5"></div>
+                <div class="cell bg-white h-24 flex items-center justify-center text-4xl font-bold rounded shadow cursor-pointer" data-index="6"></div>
+                <div class="cell bg-white h-24 flex items-center justify-center text-4xl font-bold rounded shadow cursor-pointer" data-index="7"></div>
+                <div class="cell bg-white h-24 flex items-center justify-center text-4xl font-bold rounded shadow cursor-pointer" data-index="8"></div>
+            </div>
+            
+            <div class="flex space-x-2">
+                <button id="reset-btn" class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded transition-colors font-semibold">
+                    Reset Game
+                </button>
+                <button id="leave-game-btn" class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded transition-colors font-semibold">
+                    Leave Game
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notification Toast -->
+    <div id="notification-toast" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-lg shadow-lg opacity-0 transition-opacity duration-300">
+        <span id="notification-message"></span>
+    </div>
+    
+    <script src="socket-client.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
