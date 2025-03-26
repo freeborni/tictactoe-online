@@ -125,8 +125,8 @@
             
             <!-- Player Turn and New Game Button -->
             <div class="flex justify-between items-center mb-3">
-                <div id="player-turn" class="text-2xl font-bold text-red-600">Player O's turn</div>
-                <button id="reset-btn" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-6 rounded-lg transition-colors">
+                <div id="player-turn" class="font-normal text-red-600">Player O's turn</div>
+                <button id="reset-btn" class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-4 rounded-lg transition-colors">
                     New Game
                 </button>
             </div>
@@ -142,13 +142,8 @@
                 </div>
             </div>
             
-            <!-- Player Symbol Indicator -->
-            <div id="player-symbol-indicator" class="text-center mb-3 py-1 bg-gray-100 rounded-lg">
-                <span class="font-semibold">You are playing as </span>
-                <span id="your-symbol" class="font-bold"></span>
-            </div>
             <!-- Player Scores -->
-            <div class="flex justify-between items-center mb-6">
+            <div class="flex justify-between items-center mb-4">
                 <div class="text-xl font-bold">
                     Player X: <span class="font-normal" id="score-x">0</span>
                 </div>
@@ -178,7 +173,7 @@
             </div>
             
             <!-- Game Board -->
-            <div class="grid grid-cols-3 gap-2 mb-8">
+            <div class="grid grid-cols-3 gap-2.5 mb-7">
                 <div class="cell bg-white h-28 flex items-center justify-center text-6xl font-bold rounded shadow-md cursor-pointer" data-index="0"></div>
                 <div class="cell bg-white h-28 flex items-center justify-center text-6xl font-bold rounded shadow-md cursor-pointer" data-index="1"></div>
                 <div class="cell bg-white h-28 flex items-center justify-center text-6xl font-bold rounded shadow-md cursor-pointer" data-index="2"></div>
@@ -199,7 +194,8 @@
     </div>
     
     <!-- Notification Toast -->
-    <div id="notification-toast" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-lg shadow-lg opacity-0 transition-opacity duration-300">
+    <div id="notification-toast"
+        class="fixed bottom-4 right-4 transform bg-gray-800 text-white px-4 py-2 rounded-lg shadow-lg opacity-0 transition-opacity duration-300">
         <span id="notification-message"></span>
     </div>
     

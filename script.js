@@ -30,14 +30,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // DOM elements - Game screen
     const gameRoomId = document.getElementById('game-room-id');
     const connectionBadge = document.getElementById('connection-badge');
-    const statusDisplay = document.getElementById('status-message');
     const playerTurn = document.getElementById('player-turn');
     const playerXName = document.getElementById('player-x-name');
     const playerOName = document.getElementById('player-o-name');
     const youBadgeX = document.getElementById('you-badge-x');
     const youBadgeO = document.getElementById('you-badge-o');
-    const yourSymbol = document.getElementById('your-symbol');
-    const playerSymbolIndicator = document.getElementById('player-symbol-indicator');
     const gameStatus = document.getElementById('game-status');
     const scoreX = document.getElementById('score-x');
     const scoreO = document.getElementById('score-o');
@@ -72,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Messages
     const winningMessage = (symbol, isYou) => isYou ? `You won!` : `Player ${symbol} won!`;
     const drawMessage = () => `Game ended in a draw!`;
-    const currentPlayerTurn = (symbol) => `Player ${symbol}'s turn`;
+    const currentPlayerTurn = (symbol) => `Player ${symbol}'s turn` + (ticTacToeClient.getMySymbol() === symbol ? ' (you)' : '');
     const waitingForOpponent = () => `Waiting for opponent...`;
     const opponentDisconnected = () => `Opponent disconnected`;
     
@@ -262,21 +259,6 @@ document.addEventListener('DOMContentLoaded', () => {
         updateTurnIndicator();
         updateCellsInteractivity();
         updatePlayerNames();
-        updatePlayerSymbolIndicator();
-    }
-    
-    // Update player symbol indicator
-    function updatePlayerSymbolIndicator() {
-        if (!ticTacToeClient.player) return;
-        
-        const mySymbol = ticTacToeClient.player.symbol;
-        if (mySymbol) {
-            yourSymbol.textContent = mySymbol;
-            yourSymbol.className = mySymbol === 'X' ? 'font-bold text-blue-600' : 'font-bold text-red-600';
-            playerSymbolIndicator.classList.remove('hidden');
-        } else {
-            playerSymbolIndicator.classList.add('hidden');
-        }
     }
     
     // Update turn indicator
@@ -284,9 +266,9 @@ document.addEventListener('DOMContentLoaded', () => {
         playerTurn.textContent = currentPlayerTurn(currentPlayer);
         
         if (currentPlayer === 'X') {
-            playerTurn.className = 'text-2xl font-bold text-blue-600';
+            playerTurn.className = 'text-xl font-semibold text-blue-600';
         } else {
-            playerTurn.className = 'text-2xl font-bold text-red-600';
+            playerTurn.className = 'text-xl font-semibold text-red-600';
         }
         
         // Update game status message
@@ -296,7 +278,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (isMultiplayer && !ticTacToeClient.isMyTurn()) {
             gameStatus.textContent = waitingForOpponent();
         } else {
-            gameStatus.textContent = '';
+            gameStatus.textContent = 'Your turn...';
         }
     }
     
