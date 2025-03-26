@@ -517,12 +517,8 @@ document.addEventListener('DOMContentLoaded', () => {
     joinRoomBtn.addEventListener('click', () => {
         const roomId = roomIdInput.value.trim().toUpperCase();
         const username = usernameInput.value.trim();
-        
-        if (roomId) {
-            ticTacToeClient.joinRoom(roomId, username);
-        } else {
-            showNotification('Please enter a room ID', true);
-        }
+
+        ticTacToeClient.joinRoom(roomId, username);
     });
     
     // Event listeners - Waiting screen

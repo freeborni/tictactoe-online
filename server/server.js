@@ -71,11 +71,6 @@ io.on('connection', (socket) => {
     // Join an existing game room
     socket.on('joinRoom', async ({ roomId, username }) => {
         try {
-            if (!roomId) {
-                socket.emit('error', { message: 'Room ID is required' });
-                return;
-            }
-            
             // Get or create user in database
             const user = await db.getOrCreateUser(username || 'Anonymous');
             
@@ -87,6 +82,7 @@ io.on('connection', (socket) => {
             }
             
             // Add player to room
+            roomId = room.id;
             const playerId = uuidv4();
             const result = gameManager.addPlayerToRoom(roomId, playerId, socket.id, user.username);
             

@@ -15,9 +15,17 @@ class GameManager {
         return roomId;
     }
 
-    // Get a room by ID
-    getRoom(roomId) {
-        return this.rooms.get(roomId);
+    // Get a room by ID or a random non-full room if no ID is provided
+    getRoom(roomId = null) {
+        if (roomId) {
+            return this.rooms.get(roomId);
+        }
+
+        // Find and return a random room that is not full
+        const availableRooms = [...this.rooms.values()].filter(room => !room.isFull());
+        return availableRooms.length > 0
+            ? availableRooms[Math.floor(Math.random() * availableRooms.length)]
+            : null;
     }
 
     // Add a player to a room
@@ -34,8 +42,8 @@ class GameManager {
         const success = room.addPlayer(playerId, socketId, username);
         if (success) {
             this.playerRooms.set(socketId, roomId);
-            return { 
-                success: true, 
+            return {
+                success: true,
                 room: room.getRoomState(),
                 player: room.getPlayerBySocketId(socketId)
             };
