@@ -150,6 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         ticTacToeClient.on('onRoomJoined', (data) => {
+            resetButton.click(); // reset the game
             gameRoomId.textContent = data.roomId;
             updateGameState(data.room);
             showScreen(gameScreen);

@@ -5,7 +5,7 @@ class GameRoom {
         this.currentPlayer = 'X';
         this.gameState = ['', '', '', '', '', '', '', '', ''];
         this.gameActive = false;
-        this.scores = { X: 0, O: 0 };
+        this.scores = { X: 0, O: 0, draws: 0 };
     }
 
     // Add a player to the room
@@ -137,6 +137,7 @@ class GameRoom {
         const roundDraw = !this.gameState.includes('');
         if (roundDraw) {
             this.gameActive = false;
+            this.scores.draws++;
             
             return {
                 status: 'draw',
