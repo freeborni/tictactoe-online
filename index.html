@@ -119,20 +119,20 @@
         </div>
         
         <!-- Game Screen -->
-        <div id="game-screen" class="bg-white p-6 rounded-lg shadow-md hidden">
+        <div id="game-screen" class="hidden">
             <!-- Title -->
-            <h1 class="text-4xl font-bold text-center mb-6 text-gray-800">Tic-Tac-Toe</h1>
+            <h1 class="text-2xl font-bold text-center mb-6 text-gray-800">Tic-Tac-Toe</h1>
             
             <!-- Player Turn and New Game Button -->
-            <div class="flex justify-between items-center mb-6">
+            <div class="flex justify-between items-center mb-3">
                 <div id="player-turn" class="text-2xl font-bold text-red-600">Player O's turn</div>
-                <button id="reset-btn" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-6 rounded-lg transition-colors font-semibold text-lg">
+                <button id="reset-btn" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-6 rounded-lg transition-colors">
                     New Game
                 </button>
             </div>
             
             <!-- Room Info Card -->
-            <div class="bg-white rounded-lg shadow-md p-4 mb-6 flex justify-between items-center">
+            <div class="bg-white rounded-lg shadow-md px-4 py-2 mb-3 flex justify-between items-center">
                 <div>
                     <span class="text-lg text-gray-700">Room: </span>
                     <span id="game-room-id" class="font-mono text-lg"></span>
@@ -144,11 +144,11 @@
             
             <!-- Player Scores -->
             <div class="flex justify-between items-center mb-6">
-                <div class="text-2xl font-bold">
-                    Player X: <span id="score-x">0</span>
+                <div class="text-xl font-bold">
+                    Player X: <span class="font-normal" id="score-x">0</span>
                 </div>
-                <div class="text-2xl font-bold">
-                    Player O: <span id="score-o">0</span>
+                <div class="text-xl font-bold">
+                    Player O: <span class="font-normal" id="score-o">0</span>
                 </div>
             </div>
             
@@ -168,7 +168,7 @@
             </div>
             
             <!-- Game Board -->
-            <div class="grid grid-cols-3 gap-4 mb-6">
+            <div class="grid grid-cols-3 gap-2">
                 <div class="cell bg-white h-28 flex items-center justify-center text-6xl font-bold rounded shadow-md cursor-pointer" data-index="0"></div>
                 <div class="cell bg-white h-28 flex items-center justify-center text-6xl font-bold rounded shadow-md cursor-pointer" data-index="1"></div>
                 <div class="cell bg-white h-28 flex items-center justify-center text-6xl font-bold rounded shadow-md cursor-pointer" data-index="2"></div>
@@ -181,12 +181,13 @@
             </div>
             
             <!-- Waiting Message -->
-            <div class="text-center mb-6 text-2xl text-gray-700 font-medium">
+            <div class="text-center my-4 text-lg text-gray-700">
                 Waiting for opponent...
             </div>
             
             <!-- Leave Game Button -->
-            <button id="leave-game-btn" class="w-full bg-red-500 hover:bg-red-600 text-white py-3 px-4 rounded-lg transition-colors text-xl font-semibold">
+            <button id="leave-game-btn"
+                class="w-full bg-red-500 hover:bg-red-600 text-white py-1.5 px-3 rounded-lg transition-colors text-lg">
                 Leave Game
             </button>
         </div>
