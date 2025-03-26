@@ -15,6 +15,19 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+/* Style for X and O symbols */
+.cell:not(:empty) {
+    font-size: 3.75rem; /* text-6xl */
+}
+
+.cell.x {
+    color: #3b82f6; /* blue-500 */
+}
+
+.cell.o {
+    color: #dc2626; /* red-600 */
+}
+
 /* Custom animation for winning cells */
 @keyframes pulse {
     0% {

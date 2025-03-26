@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
-    <div class="max-w-md w-full" >
+    <div class="max-w-md w-full">
         <!-- Welcome Screen -->
         <div id="welcome-screen" class="bg-white p-6 rounded-lg shadow-md">
             <h2 class="text-2xl font-bold text-center mb-6">Welcome to Tic Tac Toe</h2>
@@ -120,57 +120,75 @@
         
         <!-- Game Screen -->
         <div id="game-screen" class="bg-white p-6 rounded-lg shadow-md hidden">
-            <div class="flex justify-between items-center mb-4">
+            <!-- Title -->
+            <h1 class="text-4xl font-bold text-center mb-6 text-gray-800">Tic-Tac-Toe</h1>
+            
+            <!-- Player Turn and New Game Button -->
+            <div class="flex justify-between items-center mb-6">
+                <div id="player-turn" class="text-2xl font-bold text-red-600">Player O's turn</div>
+                <button id="reset-btn" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-6 rounded-lg transition-colors font-semibold text-lg">
+                    New Game
+                </button>
+            </div>
+            
+            <!-- Room Info Card -->
+            <div class="bg-white rounded-lg shadow-md p-4 mb-6 flex justify-between items-center">
                 <div>
-                    <span class="text-sm text-gray-500">Room:</span>
-                    <span id="game-room-id" class="font-mono text-sm"></span>
+                    <span class="text-lg text-gray-700">Room: </span>
+                    <span id="game-room-id" class="font-mono text-lg"></span>
                 </div>
-                <div id="connection-badge" class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    <span class="h-2 w-2 rounded-full bg-green-500 mr-1"></span>Connected
+                <div id="connection-badge" class="inline-flex items-center px-3 py-1 rounded-full text-base font-medium bg-green-100 text-green-800">
+                    <span class="h-3 w-3 rounded-full bg-green-500 mr-2"></span>Connected
                 </div>
             </div>
             
-            <div class="flex justify-between items-center mb-4">
+            <!-- Player Scores -->
+            <div class="flex justify-between items-center mb-6">
+                <div class="text-2xl font-bold">
+                    Player X: <span id="score-x">0</span>
+                </div>
+                <div class="text-2xl font-bold">
+                    Player O: <span id="score-o">0</span>
+                </div>
+            </div>
+            
+            <!-- Hidden elements to maintain functionality -->
+            <div class="hidden">
                 <div class="flex items-center">
                     <div class="text-blue-600 font-bold mr-1">X:</div>
                     <div id="player-x-name" class="mr-1">Player X</div>
                     <span id="you-badge-x" class="hidden bg-gray-200 text-xs px-1 rounded">You</span>
-                </div>
-                <div class="text-center font-bold">
-                    <span id="score-x">0</span>
-                    <span class="mx-1">-</span>
-                    <span id="score-o">0</span>
                 </div>
                 <div class="flex items-center">
                     <div class="text-red-600 font-bold mr-1">O:</div>
                     <div id="player-o-name" class="mr-1">Player O</div>
                     <span id="you-badge-o" class="hidden bg-gray-200 text-xs px-1 rounded">You</span>
                 </div>
+                <div id="status-message" class="text-center mb-2 h-6 font-semibold"></div>
             </div>
             
-            <div id="status-message" class="text-center mb-2 h-6 font-semibold"></div>
-            <div id="player-turn" class="text-center mb-4 text-blue-600">Player X's turn</div>
-            
-            <div class="grid grid-cols-3 gap-2 mb-4">
-                <div class="cell bg-white h-24 flex items-center justify-center text-4xl font-bold rounded shadow cursor-pointer" data-index="0"></div>
-                <div class="cell bg-white h-24 flex items-center justify-center text-4xl font-bold rounded shadow cursor-pointer" data-index="1"></div>
-                <div class="cell bg-white h-24 flex items-center justify-center text-4xl font-bold rounded shadow cursor-pointer" data-index="2"></div>
-                <div class="cell bg-white h-24 flex items-center justify-center text-4xl font-bold rounded shadow cursor-pointer" data-index="3"></div>
-                <div class="cell bg-white h-24 flex items-center justify-center text-4xl font-bold rounded shadow cursor-pointer" data-index="4"></div>
-                <div class="cell bg-white h-24 flex items-center justify-center text-4xl font-bold rounded shadow cursor-pointer" data-index="5"></div>
-                <div class="cell bg-white h-24 flex items-center justify-center text-4xl font-bold rounded shadow cursor-pointer" data-index="6"></div>
-                <div class="cell bg-white h-24 flex items-center justify-center text-4xl font-bold rounded shadow cursor-pointer" data-index="7"></div>
-                <div class="cell bg-white h-24 flex items-center justify-center text-4xl font-bold rounded shadow cursor-pointer" data-index="8"></div>
+            <!-- Game Board -->
+            <div class="grid grid-cols-3 gap-4 mb-6">
+                <div class="cell bg-white h-28 flex items-center justify-center text-6xl font-bold rounded shadow-md cursor-pointer" data-index="0"></div>
+                <div class="cell bg-white h-28 flex items-center justify-center text-6xl font-bold rounded shadow-md cursor-pointer" data-index="1"></div>
+                <div class="cell bg-white h-28 flex items-center justify-center text-6xl font-bold rounded shadow-md cursor-pointer" data-index="2"></div>
+                <div class="cell bg-white h-28 flex items-center justify-center text-6xl font-bold rounded shadow-md cursor-pointer" data-index="3"></div>
+                <div class="cell bg-white h-28 flex items-center justify-center text-6xl font-bold rounded shadow-md cursor-pointer" data-index="4"></div>
+                <div class="cell bg-white h-28 flex items-center justify-center text-6xl font-bold rounded shadow-md cursor-pointer" data-index="5"></div>
+                <div class="cell bg-white h-28 flex items-center justify-center text-6xl font-bold rounded shadow-md cursor-pointer" data-index="6"></div>
+                <div class="cell bg-white h-28 flex items-center justify-center text-6xl font-bold rounded shadow-md cursor-pointer" data-index="7"></div>
+                <div class="cell bg-white h-28 flex items-center justify-center text-6xl font-bold rounded shadow-md cursor-pointer" data-index="8"></div>
             </div>
             
-            <div class="flex space-x-2">
-                <button id="reset-btn" class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded transition-colors font-semibold">
-                    Reset Game
-                </button>
-                <button id="leave-game-btn" class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded transition-colors font-semibold">
-                    Leave Game
-                </button>
+            <!-- Waiting Message -->
+            <div class="text-center mb-6 text-2xl text-gray-700 font-medium">
+                Waiting for opponent...
             </div>
+            
+            <!-- Leave Game Button -->
+            <button id="leave-game-btn" class="w-full bg-red-500 hover:bg-red-600 text-white py-3 px-4 rounded-lg transition-colors text-xl font-semibold">
+                Leave Game
+            </button>
         </div>
     </div>
     

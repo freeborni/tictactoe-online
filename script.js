@@ -265,9 +265,9 @@ document.addEventListener('DOMContentLoaded', () => {
         playerTurn.textContent = currentPlayerTurn(currentPlayer);
         
         if (currentPlayer === 'X') {
-            playerTurn.className = 'text-blue-600';
+            playerTurn.className = 'text-2xl font-bold text-blue-600';
         } else {
-            playerTurn.className = 'text-red-600';
+            playerTurn.className = 'text-2xl font-bold text-red-600';
         }
         
         // If it's not the player's turn in multiplayer, show waiting message
@@ -301,11 +301,11 @@ document.addEventListener('DOMContentLoaded', () => {
         cell.textContent = symbol;
         
         // Apply color based on player
-        cell.classList.remove('text-blue-600', 'text-red-600');
+        cell.classList.remove('text-blue-600', 'text-red-600', 'x', 'o');
         if (symbol === 'X') {
-            cell.classList.add('text-blue-600');
+            cell.classList.add('x');
         } else if (symbol === 'O') {
-            cell.classList.add('text-red-600');
+            cell.classList.add('o');
         }
     }
     
@@ -314,7 +314,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Clear the board
         cells.forEach(cell => {
             cell.textContent = '';
-            cell.classList.remove('bg-green-200', 'text-blue-600', 'text-red-600');
+            cell.classList.remove('bg-green-200', 'text-blue-600', 'text-red-600', 'x', 'o');
             cell.classList.add('bg-white');
         });
         
