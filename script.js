@@ -36,8 +36,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const playerOName = document.getElementById('player-o-name');
     const youBadgeX = document.getElementById('you-badge-x');
     const youBadgeO = document.getElementById('you-badge-o');
+    const yourSymbol = document.getElementById('your-symbol');
+    const playerSymbolIndicator = document.getElementById('player-symbol-indicator');
+    const gameStatus = document.getElementById('game-status');
     const scoreX = document.getElementById('score-x');
     const scoreO = document.getElementById('score-o');
+    const scoreDraws = document.getElementById('score-draws');
     const cells = document.querySelectorAll('.cell');
     const resetButton = document.getElementById('reset-btn');
     const leaveGameBtn = document.getElementById('leave-game-btn');
@@ -50,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let gameActive = false;
     let currentPlayer = 'X';
     let gameState = ['', '', '', '', '', '', '', '', ''];
-    let scores = { X: 0, O: 0 };
+    let scores = { X: 0, O: 0, draws: 0 };
     let isMultiplayer = true;
     
     // Winning combinations
@@ -66,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
     
     // Messages
-    const winningMessage = (symbol) => `Player ${symbol} wins!`;
+    const winningMessage = (symbol, isYou) => isYou ? `You won!` : `Player ${symbol} won!`;
     const drawMessage = () => `Game ended in a draw!`;
     const currentPlayerTurn = (symbol) => `Player ${symbol}'s turn`;
     const waitingForOpponent = () => `Waiting for opponent...`;
@@ -189,7 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.roomState) {
                 updateGameState(data.roomState);
             }
-            statusDisplay.textContent = opponentDisconnected();
+            gameStatus.textContent = opponentDisconnected();
             showNotification('Opponent disconnected');
         });
         
@@ -251,13 +255,28 @@ document.addEventListener('DOMContentLoaded', () => {
         gameState = roomState.gameState;
         currentPlayer = roomState.currentPlayer;
         gameActive = roomState.gameActive;
-        scores = roomState.scores;
+        scores = roomState.scores || { X: 0, O: 0, draws: 0 };
         
         // Update UI
         updateScoreDisplay();
         updateTurnIndicator();
         updateCellsInteractivity();
         updatePlayerNames();
+        updatePlayerSymbolIndicator();
+    }
+    
+    // Update player symbol indicator
+    function updatePlayerSymbolIndicator() {
+        if (!ticTacToeClient.player) return;
+        
+        const mySymbol = ticTacToeClient.player.symbol;
+        if (mySymbol) {
+            yourSymbol.textContent = mySymbol;
+            yourSymbol.className = mySymbol === 'X' ? 'font-bold text-blue-600' : 'font-bold text-red-600';
+            playerSymbolIndicator.classList.remove('hidden');
+        } else {
+            playerSymbolIndicator.classList.add('hidden');
+        }
     }
     
     // Update turn indicator
@@ -270,11 +289,14 @@ document.addEventListener('DOMContentLoaded', () => {
             playerTurn.className = 'text-2xl font-bold text-red-600';
         }
         
-        // If it's not the player's turn in multiplayer, show waiting message
-        if (isMultiplayer && !ticTacToeClient.isMyTurn()) {
-            statusDisplay.textContent = waitingForOpponent();
+        // Update game status message
+        if (!gameActive) {
+            // Game is over, status message is already set by handleWin or handleDraw
+            return;
+        } else if (isMultiplayer && !ticTacToeClient.isMyTurn()) {
+            gameStatus.textContent = waitingForOpponent();
         } else {
-            statusDisplay.textContent = '';
+            gameStatus.textContent = '';
         }
     }
     
@@ -319,14 +341,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         // Update UI
-        statusDisplay.textContent = '';
+        gameStatus.textContent = '';
         updateTurnIndicator();
         updateCellsInteractivity();
     }
     
     // Handle win condition
     function handleWin(winner, winningCombo, updatedScores) {
-        statusDisplay.textContent = winningMessage(winner);
+        const isYou = ticTacToeClient.getMySymbol() === winner;
+        gameStatus.textContent = winningMessage(winner, isYou);
         
         // Highlight winning cells
         winningCombo.forEach(index => {
@@ -335,23 +358,35 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         // Update score
-        scores = updatedScores;
+        scores = updatedScores || scores;
         updateScoreDisplay();
         updateCellsInteractivity();
     }
     
     // Handle draw condition
     function handleDraw(updatedScores) {
-        statusDisplay.textContent = drawMessage();
-        scores = updatedScores;
+        gameStatus.textContent = drawMessage();
+        scores = updatedScores || scores;
         updateScoreDisplay();
         updateCellsInteractivity();
     }
     
     // Update score display
     function updateScoreDisplay() {
-        scoreX.textContent = scores.X;
-        scoreO.textContent = scores.O;
+        scoreX.textContent = scores.X || 0;
+        scoreO.textContent = scores.O || 0;
+        
+        // Update draws count
+        if (scores.draws !== undefined) {
+            scoreDraws.textContent = scores.draws;
+        } else {
+            // If not available, calculate it from the room state if possible
+            if (ticTacToeClient.room && ticTacToeClient.room.draws !== undefined) {
+                scoreDraws.textContent = ticTacToeClient.room.draws;
+            } else {
+                scoreDraws.textContent = '0';
+            }
+        }
     }
     
     // Handle cell click
@@ -494,7 +529,6 @@ document.addEventListener('DOMContentLoaded', () => {
     createRoomBtn.addEventListener('click', () => {
         const username = usernameInput.value.trim();
         ticTacToeClient.createRoom(username);
-        console.log('create coom clicked');
     });
     
     joinRoomBtn.addEventListener('click', () => {

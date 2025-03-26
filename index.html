@@ -142,16 +142,26 @@
                 </div>
             </div>
             
+            <!-- Player Symbol Indicator -->
+            <div id="player-symbol-indicator" class="text-center mb-3 py-1 bg-gray-100 rounded-lg">
+                <span class="font-semibold">You are playing as </span>
+                <span id="your-symbol" class="font-bold"></span>
+            </div>
             <!-- Player Scores -->
             <div class="flex justify-between items-center mb-6">
                 <div class="text-xl font-bold">
                     Player X: <span class="font-normal" id="score-x">0</span>
+                </div>
+                <div class="text-xl font-bold text-center">
+                    Draws: <span class="font-normal" id="score-draws">0</span>
                 </div>
                 <div class="text-xl font-bold">
                     Player O: <span class="font-normal" id="score-o">0</span>
                 </div>
             </div>
             
+            <!-- Game Status Message -->
+            <div id="game-status" class="text-center mb-4 py-1 font-semibold text-lg"></div>
             <!-- Hidden elements to maintain functionality -->
             <div class="hidden">
                 <div class="flex items-center">
@@ -168,7 +178,7 @@
             </div>
             
             <!-- Game Board -->
-            <div class="grid grid-cols-3 gap-2">
+            <div class="grid grid-cols-3 gap-2 mb-8">
                 <div class="cell bg-white h-28 flex items-center justify-center text-6xl font-bold rounded shadow-md cursor-pointer" data-index="0"></div>
                 <div class="cell bg-white h-28 flex items-center justify-center text-6xl font-bold rounded shadow-md cursor-pointer" data-index="1"></div>
                 <div class="cell bg-white h-28 flex items-center justify-center text-6xl font-bold rounded shadow-md cursor-pointer" data-index="2"></div>
@@ -178,11 +188,6 @@
                 <div class="cell bg-white h-28 flex items-center justify-center text-6xl font-bold rounded shadow-md cursor-pointer" data-index="6"></div>
                 <div class="cell bg-white h-28 flex items-center justify-center text-6xl font-bold rounded shadow-md cursor-pointer" data-index="7"></div>
                 <div class="cell bg-white h-28 flex items-center justify-center text-6xl font-bold rounded shadow-md cursor-pointer" data-index="8"></div>
-            </div>
-            
-            <!-- Waiting Message -->
-            <div class="text-center my-4 text-lg text-gray-700">
-                Waiting for opponent...
             </div>
             
             <!-- Leave Game Button -->
