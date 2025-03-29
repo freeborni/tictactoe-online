@@ -162,40 +162,40 @@
 
         <!-- Game Screen -->
         <div id="game-screen" class="hidden">
-            <div class="card p-5 rounded-2xl shadow-2xl flex flex-col justify-between gap-2">
+            <div class="card p-5 rounded-2xl shadow-2xl flex flex-col justify-between gap-1">
                 <h1
-                    class="text-3xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600">
+                    class="text-3xl font-bold text-center bg-clip-text text-indigo-600">
                     Tic-Tac-Toe</h1>
-                <div class="flex justify-between items-center">
-                    <div id="player-turn" class="text-xl font-semibold text-purple-600">Player O's turn</div>
-                    <button id="reset-btn" class="btn-primary text-white py-2 px-4 rounded-lg text-sm">
+                <div class="flex justify-between items-center bg-indigo-100 text-indigo-600 rounded-md pl-3">
+                    <div id="player-turn" class="text-lg font-semibold text-indigo-800">Player O's turn</div>
+                    <button id="reset-btn" class="bg-indigo-600 text-white py-2 px-4 rounded-md text-sm">
                         New Game
                     </button>
                 </div>
-                <div class="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl px-4 py-2 flex justify-between items-center">
-                    <div>
-                        <span class="text-lg text-gray-700">Room: </span>
-                        <span id="game-room-id" class="font-mono text-lg text-purple-600"></span>
+                <div class="py-2 flex justify-between items-center">
+                    <div class="bg-indigo-50 rounded-md px-3 py-1.5">
+                        <span class="text-gray-700">Room: </span>
+                        <span id="game-room-id" class="font-mono font-light text-blue-600"></span>
                     </div>
                     <div id="connection-badge"
-                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                        class="inline-flex items-center px-3 py-2 rounded-full text-sm font-medium bg-teal-100 text-green-800">
                         <span class="h-2 w-2 rounded-full bg-green-500 mr-2"></span>Connected
                     </div>
                 </div>
                 <div class="flex justify-between items-center">
-                    <div class="font-semibold">
-                        Player X: <span class="font-normal text-purple-600" id="score-x">0</span>
+                    <div class="font-medium">
+                        Player X: <span class="font-normal text-blue-600" id="score-x">0</span>
                     </div>
-                    <div class="font-semibold text-center">
+                    <div class="font-medium text-center">
                         Draws: <span class="font-normal text-gray-600" id="score-draws">0</span>
                     </div>
-                    <div class="font-semibold">
+                    <div class="font-medium">
                         Player O: <span class="font-normal text-blue-600" id="score-o">0</span>
                     </div>
                 </div>
                 <div id="game-status" class="text-center py-2"></div>
                 <!-- Game Board -->
-                <div class="grid grid-cols-3 gap-3 mb-2">
+                <div class="grid grid-cols-3 gap-3 mb-3">
                     <div class="cell bg-white h-24 md:h-28 aspect-square flex items-center justify-center text-5xl font-bold rounded-xl shadow-lg cursor-pointer"
                         data-index="0"></div>
                     <div class="cell bg-white h-24 md:h-28 aspect-square flex items-center justify-center text-5xl font-bold rounded-xl shadow-lg cursor-pointer"
@@ -215,7 +215,7 @@
                     <div class="cell bg-white h-24 md:h-28 aspect-square flex items-center justify-center text-5xl font-bold rounded-xl shadow-lg cursor-pointer"
                         data-index="8"></div>
                 </div>
-                <button id="leave-game-btn" class="btn-danger w-full text-white py-2 px-6 rounded-xl">
+                <button id="leave-game-btn" class="bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors px-4 py-2 rounded-md">
                     Leave Game
                 </button>
             </div>

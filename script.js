@@ -28,7 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const cancelWaitBtn = document.getElementById('cancel-wait-btn');
 
     // DOM elements - Leaderboard screen
-    // const leaderboardContent = document.getElementById('leaderboard-content');
     const backToHomeBtn = document.getElementById('back-to-home-btn');
 
     // DOM elements - Game screen
@@ -204,10 +203,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Update connection status UI
     function updateConnectionStatus(isConnected) {
         if (isConnected) {
-            connectionBadge.className = 'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800';
+            connectionBadge.className = 'inline-flex items-center px-3 py-2 rounded-md text-xs font-medium bg-green-50 text-green-800';
             connectionBadge.innerHTML = '<span class="h-2 w-2 rounded-full bg-green-500 mr-1"></span>Connected';
         } else {
-            connectionBadge.className = 'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800';
+            connectionBadge.className = 'inline-flex items-center px-3 py-2 rounded-full text-xs font-medium bg-red-100 text-red-800';
             connectionBadge.innerHTML = '<span class="h-2 w-2 rounded-full bg-red-500 mr-1"></span>Disconnected';
         }
     }
@@ -265,11 +264,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateTurnIndicator() {
         playerTurn.textContent = currentPlayerTurn(currentPlayer);
         
-        if (currentPlayer === 'X') {
-            playerTurn.className = 'text-xl font-semibold text-blue-600';
-        } else {
-            playerTurn.className = 'text-xl font-semibold text-red-600';
-        }
+        // if (currentPlayer === 'X') {
+        //     playerTurn.className = 'text-xl font-semibold text-blue-600';
+        // } else {
+        //     playerTurn.className = 'text-xl font-semibold text-red-600';
+        // }
         
         // Update game status message
         if (!gameActive) {
