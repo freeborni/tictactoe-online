@@ -26,7 +26,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const roomIdDisplay = document.getElementById('room-id-display');
     const copyRoomIdBtn = document.getElementById('copy-room-id');
     const cancelWaitBtn = document.getElementById('cancel-wait-btn');
-    
+
+    // DOM elements - Leaderboard screen
+    // const leaderboardContent = document.getElementById('leaderboard-content');
+    const backToHomeBtn = document.getElementById('back-to-home-btn');
+
     // DOM elements - Game screen
     const gameRoomId = document.getElementById('game-room-id');
     const connectionBadge = document.getElementById('connection-badge');
@@ -237,8 +241,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Show a specific screen and hide others
     function showScreen(screenToShow) {
-        console.log([welcomeScreen, homeScreen, waitingScreen, gameScreen, leaderboardScreen]);
-
         [welcomeScreen, homeScreen, waitingScreen, gameScreen, leaderboardScreen].forEach(screen => {
             if (screen === screenToShow) {
                 screen.classList.remove('hidden');
@@ -543,6 +545,10 @@ document.addEventListener('DOMContentLoaded', () => {
         ticTacToeClient.leaveRoom();
         showScreen(homeScreen);
         showNotification('Waiting cancelled');
+    });
+
+    backToHomeBtn.addEventListener('click', () => {
+        showScreen(homeScreen);
     });
     
     // Event listeners - Game screen
