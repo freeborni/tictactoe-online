@@ -35,10 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const gameRoomId = document.getElementById('game-room-id');
     const connectionBadge = document.getElementById('connection-badge');
     const playerTurn = document.getElementById('player-turn');
-    const playerXName = document.getElementById('player-x-name');
-    const playerOName = document.getElementById('player-o-name');
-    const youBadgeX = document.getElementById('you-badge-x');
-    const youBadgeO = document.getElementById('you-badge-o');
     const gameStatus = document.getElementById('game-status');
     const scoreX = document.getElementById('score-x');
     const scoreO = document.getElementById('score-o');
@@ -263,7 +259,6 @@ document.addEventListener('DOMContentLoaded', () => {
         updateScoreDisplay();
         updateTurnIndicator();
         updateCellsInteractivity();
-        updatePlayerNames();
     }
     
     // Update turn indicator
@@ -461,31 +456,7 @@ document.addEventListener('DOMContentLoaded', () => {
         html += '</tbody></table>';
         leaderboardContent.innerHTML = html;
     }
-    
-    // Update player names in game screen
-    function updatePlayerNames() {
-        if (!ticTacToeClient.room || !ticTacToeClient.player) return;
-        
-        const players = ticTacToeClient.room.players;
-        const mySymbol = ticTacToeClient.player.symbol;
-        
-        // Find players by symbol
-        const playerX = players.find(p => p.symbol === 'X');
-        const playerO = players.find(p => p.symbol === 'O');
-        
-        // Update player X info
-        if (playerX) {
-            playerXName.textContent = playerX.username || 'Player X';
-            youBadgeX.classList.toggle('hidden', mySymbol !== 'X');
-        }
-        
-        // Update player O info
-        if (playerO) {
-            playerOName.textContent = playerO.username || 'Player O';
-            youBadgeO.classList.toggle('hidden', mySymbol !== 'O');
-        }
-    }
-    
+
     // Event listeners - Welcome screen
     enterGameBtn.addEventListener('click', () => {
         const username = usernameInput.value.trim();
