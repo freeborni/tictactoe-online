@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const cells = document.querySelectorAll('.cell');
     const resetButton = document.getElementById('reset-btn');
     const leaveGameBtn = document.getElementById('leave-game-btn');
+    const gamePlayers = document.getElementById('game-players');
     
     // DOM elements - Notification
     const notificationToast = document.getElementById('notification-toast');
@@ -212,6 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // Show notification toast
+
     function showNotification(message, isError = false) {
         notificationMessage.textContent = message;
         
@@ -239,6 +241,12 @@ document.addEventListener('DOMContentLoaded', () => {
         [welcomeScreen, homeScreen, waitingScreen, gameScreen, leaderboardScreen].forEach(screen => {
             if (screen === screenToShow) {
                 screen.classList.remove('hidden');
+                if (screen === gameScreen) {
+                    const players = ticTacToeClient.room.players;
+                    gamePlayers.textContent = `${players[0].username} vs ${players[1].username}`;
+                    document.getElementById('player-x').textContent = players[0].username;
+                    document.getElementById('player-o').textContent = players[1].username;
+                }
             } else {
                 screen.classList.add('hidden');
             }
@@ -263,13 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Update turn indicator
     function updateTurnIndicator() {
         playerTurn.textContent = currentPlayerTurn(currentPlayer);
-        
-        // if (currentPlayer === 'X') {
-        //     playerTurn.className = 'text-xl font-semibold text-blue-600';
-        // } else {
-        //     playerTurn.className = 'text-xl font-semibold text-red-600';
-        // }
-        
+
         // Update game status message
         if (!gameActive) {
             // Game is over, status message is already set by handleWin or handleDraw

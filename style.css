@@ -41,7 +41,8 @@
     }
 }
 
-.bg-green-200 {
+.bg-green-200,
+#game-status {
     animation: pulse 1s infinite;
 }
 
