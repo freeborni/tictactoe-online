@@ -155,6 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
             updateGameState(data.room);
             showScreen(gameScreen);
             showNotification('Joined game room');
+            updateYourPlayerIcon(); // update your own user icon
         });
         
         ticTacToeClient.on('onPlayerJoined', (data) => {
@@ -473,6 +474,19 @@ document.addEventListener('DOMContentLoaded', () => {
             showNotification('Please enter a username', true);
         }
     });
+
+    // Update current player icon
+    function updateYourPlayerIcon() {
+        const playerXIcon = document.getElementById('player-x-icon');
+        const playerOIcon = document.getElementById('player-o-icon');
+        if (ticTacToeClient.getMySymbol() === 'X') {
+            playerXIcon.classList.remove('hidden');
+            playerOIcon.classList.add('hidden');
+        } else {
+            playerXIcon.classList.add('hidden');
+            playerOIcon.classList.remove('hidden');
+        }
+    }
     
     // Event listeners - Leaderboard screen
     canceWaitBtn.addEventListener('click', () => {
