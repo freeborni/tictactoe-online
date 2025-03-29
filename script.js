@@ -233,10 +233,12 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // DOM elements - Leaderboard screen
     const leaderboardContent = document.getElementById('leaderboard-content');
-    const backToHomeBtn = document.getElementById('back-to-home-btn');
+    const canceWaitBtn = document.getElementById('cancel-wait-btn');
     
     // Show a specific screen and hide others
     function showScreen(screenToShow) {
+        console.log([welcomeScreen, homeScreen, waitingScreen, gameScreen, leaderboardScreen]);
+
         [welcomeScreen, homeScreen, waitingScreen, gameScreen, leaderboardScreen].forEach(screen => {
             if (screen === screenToShow) {
                 screen.classList.remove('hidden');
@@ -499,7 +501,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     // Event listeners - Leaderboard screen
-    backToHomeBtn.addEventListener('click', () => {
+    canceWaitBtn.addEventListener('click', () => {
         showScreen(homeScreen);
     });
     
