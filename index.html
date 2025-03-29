@@ -5,20 +5,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-        content="Tic-Tac Online is a multiplayer Tic-Tac-Toe game that allows you to play against your friends and family.">
-    <title>Tic-Tac Online</title>
+        content="Challenge friends to an exciting game of Tic-Tac-Toe! Create a private room, share the room ID, and play against
+        each other in real-time. Track your wins, losses and compete on the global leaderboard.">
+    <title>Tic-Tac-Toe Online</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="custom.css">
 </head>
 
 <body class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-indigo-500 to-purple-600">
-    <div class="max-w-md w-full">
+    <div class="max-w-lg w-full">
         <!-- Welcome Screen -->
         <div id="welcome-screen" class="backdrop-blur-md bg-white/95 border border-white/20 p-6 rounded-2xl shadow-2xl">
             <h2
                 class="text-3xl font-bold text-center mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600">
-                Welcome to Tic-Tac!
+                Play Tic-Tac-Toe Online
             </h2>
+            <p class="text-gray-600 mb-6 text-center font-semibold text-lg">
+                Play Tic-Tac-Toe online for free! Challenge friends in private rooms or play with random people and compete in
+                real-time. <span class="text-2xl">💙💖💙</span></p>
+            <!-- 💜 -->
 
             <div class="mb-4">
                 <label for="username-input" class="block text-gray-700 mb-2 text-lg">Enter your username:</label>
@@ -124,7 +129,7 @@
             <div
                 class="backdrop-blur-md bg-white/95 border border-white/20 p-5 rounded-2xl shadow-2xl flex flex-col justify-between gap-1">
                 <h1 class="text-xl font-medium text-center text-gray-500">
-                    Tic-Tac-Toe</h1>
+                    Tic-Tac-Toe Online</h1>
                     <hr class="my-2">
                     <p class="text-center text-gray-500 my-2 hidden" id="game-players">Player1 vs Player 2</p>
                 <div class="flex justify-between items-center bg-indigo-100 text-indigo-600 rounded-md pl-3">
@@ -171,7 +176,7 @@
                 <hr class="mt-2">
                 <div id="game-status" class="text-center py-2 text-sm text-gray-500"></div>
                 <!-- Game Board -->
-                <div class="grid grid-cols-3 gap-3 mb-3">
+                <div class="grid grid-cols-3 gap-3 md:gap-4 mb-3">
                     <div class="cell bg-white h-24 md:h-28 flex items-center justify-center text-5xl font-bold rounded-xl shadow-lg cursor-pointer"
                         data-index="0"></div>
                     <div class="cell bg-white h-24 md:h-28 flex items-center justify-center text-5xl font-bold rounded-xl shadow-lg cursor-pointer"
