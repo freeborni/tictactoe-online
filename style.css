@@ -1305,3 +1305,7 @@ video {
     height: 7rem;
   }
 }
+.notification-show {
+  opacity: 1;
+  transform: translateY(0);
+}
