@@ -155,7 +155,6 @@ document.addEventListener('DOMContentLoaded', () => {
             updateGameState(data.room);
             showScreen(gameScreen);
             showNotification('Joined game room');
-            updateYourPlayerIcon(); // update your own user icon
         });
         
         ticTacToeClient.on('onPlayerJoined', (data) => {
@@ -245,8 +244,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (screen === gameScreen) {
                     const players = ticTacToeClient.room.players;
                     gamePlayers.textContent = `${players[0].username} vs ${players[1].username}`;
-                    document.getElementById('player-x').textContent = players[0].username;
-                    document.getElementById('player-o').textContent = players[1].username;
+                    document.getElementById('player-x').textContent = players.find(player => player.symbol === 'X').username;
+                    document.getElementById('player-o').textContent = players.find(player => player.symbol === 'O').username;
                 }
             } else {
                 screen.classList.add('hidden');
@@ -328,6 +327,7 @@ document.addEventListener('DOMContentLoaded', () => {
         gameStatus.textContent = '';
         updateTurnIndicator();
         updateCellsInteractivity();
+        updateYourPlayerIcon(); // update your own user icon
     }
     
     // Handle win condition
