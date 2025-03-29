@@ -14,7 +14,11 @@ class GameRoom {
             return false;
         }
 
-        const symbol = this.players.length === 0 ? 'X' : 'O';
+        // Assign X to first player, opposite symbol of first player to second player
+        // Determine player symbol - first player gets 'X', second player gets opposite of first player's symbol
+        const isFirstPlayer = this.players.length === 0;
+        const symbol = isFirstPlayer ? 'X' : (this.players[0].symbol === 'X' ? 'O' : 'X');
+
         this.players.push({
             id: playerId,
             socketId,
