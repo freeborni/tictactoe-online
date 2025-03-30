@@ -16,6 +16,8 @@ const server = http.createServer(app);
 // Configure middleware
 app.use(cors());
 app.use(express.static(path.join(__dirname, '..')));
+app.set("trust proxy", 1);
+
 
 // Initialize Socket.IO
 const io = socketIO(server, {
