@@ -1,5 +1,5 @@
 {
-  "name": "tic-tac-toe-server",
+  "name": "tictactoe-online-server",
   "version": "1.0.0",
   "description": "WebSocket server for multiplayer Tic-Tac-Toe",
   "main": "server.js",
