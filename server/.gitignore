@@ -2,3 +2,4 @@ tictactoe.db
 .cursorrules
 node_modules
 **/node_modules/
+.devdbrc
