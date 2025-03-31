@@ -4,7 +4,7 @@ module.exports = {
     theme: {
         extend: {
             animation: {
-                'pulse': 'pulse 1s infinite',
+                'pulse': 'pulse 2s infinite',
                 'slide-up': 'slideUp 0.3s forwards',
                 'copy-success': 'copySuccess 0.3s forwards',
             },

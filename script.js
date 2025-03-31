@@ -278,8 +278,10 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         } else if (isMultiplayer && !ticTacToeClient.isMyTurn()) {
             gameStatus.textContent = waitingForOpponent();
+            gameStatus.classList.add('animate-pulse');
         } else {
             gameStatus.textContent = 'Your turn...';
+            gameStatus.classList.add('animate-pulse');
         }
     }
     
@@ -319,12 +321,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // Clear the board
         cells.forEach(cell => {
             cell.textContent = '';
-            cell.classList.remove('bg-green-200', 'text-blue-600', 'text-red-600', 'x', 'o');
+            cell.classList.remove('bg-green-200', 'text-blue-600', 'text-red-600', 'x', 'o', 'animate-pulse');
             cell.classList.add('bg-white');
         });
         
         // Update UI
         gameStatus.textContent = '';
+        gameStatus.classList.remove('animate-pulse');
         updateTurnIndicator();
         updateCellsInteractivity();
         updateYourPlayerIcon(); // update your own user icon
@@ -334,11 +337,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleWin(winner, winningCombo, updatedScores) {
         const isYou = ticTacToeClient.getMySymbol() === winner;
         gameStatus.textContent = winningMessage(winner, isYou);
+        gameStatus.classList.add('animate-pulse');
         
         // Highlight winning cells
         winningCombo.forEach(index => {
             cells[index].classList.remove('bg-white');
-            cells[index].classList.add('bg-green-200');
+            cells[index].classList.add('bg-green-200', 'animate-pulse');
         });
         
         // Update score
@@ -350,6 +354,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Handle draw condition
     function handleDraw(updatedScores) {
         gameStatus.textContent = drawMessage();
+        gameStatus.classList.add('animate-pulse');
         scores = updatedScores || scores;
         updateScoreDisplay();
         updateCellsInteractivity();

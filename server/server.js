@@ -22,7 +22,7 @@ app.set("trust proxy", 1);
 // Initialize Socket.IO
 const io = socketIO(server, {
     cors: {
-        origin: "*",
+        origin: "http://localhost:3000",
         methods: ["GET", "POST"]
     }
 });
