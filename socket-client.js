@@ -1,6 +1,4 @@
 // Socket.IO client for Tic-Tac-Toe multiplayer game
-import { io } from 'socket.io-client';
-
 class TicTacToeClient {
     constructor() {
         this.socket = null;
