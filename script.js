@@ -53,6 +53,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const notificationToast = document.getElementById('notification-toast');
     const notificationMessage = document.getElementById('notification-message');
     
+    // DOM elements - Chat
+    const chatWidget = document.getElementById('chat-widget');
+    const chatWindow = document.getElementById('chat-window');
+    const chatToggle = document.getElementById('chat-toggle');
+    const chatClose = document.getElementById('chat-close');
+    const chatMessages = document.getElementById('chat-messages');
+    const chatInput = document.getElementById('chat-input');
+    const chatSend = document.getElementById('chat-send');
+
     // Game state
     let gameActive = false;
     let currentPlayer = 'X';
@@ -91,6 +100,18 @@ document.addEventListener('DOMContentLoaded', () => {
             // Set up event handlers for Socket.IO events
             setupSocketEventHandlers();
             
+            // Set up chat event handlers
+            ticTacToeClient.on('onChatMessage', (message) => {
+                addChatMessage(message.username, message.message);
+            });
+
+            ticTacToeClient.on('onChatHistory', (messages) => {
+                chatMessages.innerHTML = ''; // Clear existing messages
+                messages.forEach(message => {
+                    addChatMessage(message.username, message.message);
+                });
+            });
+
             // Load saved username
             const savedUsername = ticTacToeClient.getSavedUsername();
             if (savedUsername) {
@@ -107,9 +128,9 @@ document.addEventListener('DOMContentLoaded', () => {
             joinRoomBtn.disabled = false;
         })
         .catch(error => {
-            connectionStatus.textContent = 'Failed to connect to server';
+            console.error('Failed to initialize socket client:', error);
+            connectionStatus.textContent = 'Connection failed';
             connectionStatus.classList.add('text-red-500');
-            console.error('Socket.IO initialization error:', error);
         });
     
     // Set up Socket.IO event handlers
@@ -132,7 +153,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 userWins.textContent = data.wins || 0;
                 userLosses.textContent = data.losses || 0;
                 userDraws.textContent = data.draws || 0;
-                console.log({ data });
                 
                 // Show username
                 if (data.username) {
@@ -205,6 +225,25 @@ document.addEventListener('DOMContentLoaded', () => {
         ticTacToeClient.on('onError', (data) => {
             showNotification(`Error: ${data.message}`, true);
         });
+
+        // Chat events
+        ticTacToeClient.on('onChatMessage', (data) => {
+            if (isMultiplayer) {
+                addChatMessage(data.username, data.message);
+            }
+        });
+
+        // Chat history
+        ticTacToeClient.on('onChatHistory', (messages) => {
+            if (isMultiplayer && messages) {
+                // Clear existing messages
+                chatMessages.innerHTML = '';
+                // Add all messages from history
+                messages.forEach(msg => {
+                    addChatMessage(msg.username, msg.message);
+                });
+            }
+        });
     }
     
     // Update connection status UI
@@ -248,11 +287,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         gamePlayers.textContent = `${username} vs Computer`;
                         document.getElementById('player-x').textContent = username;
                         document.getElementById('player-o').textContent = 'Computer';
+                        chatWidget.classList.add('hidden');
                     } else {
                         const players = ticTacToeClient.room.players;
                         gamePlayers.textContent = `${players[0].username} vs ${players[1].username}`;
                         document.getElementById('player-x').textContent = players.find(player => player.symbol === 'X').username;
                         document.getElementById('player-o').textContent = players.find(player => player.symbol === 'O').username;
+                        chatWidget.classList.remove('hidden');
                     }
                 }
             } else {
@@ -863,6 +904,53 @@ document.addEventListener('DOMContentLoaded', () => {
             updateTurnIndicator();
         }
     }
+
+    // Chat functions
+    function addChatMessage(username, message) {
+        const messageElement = document.createElement('div');
+        messageElement.className = 'flex flex-col mb-2';
+
+        const usernameElement = document.createElement('span');
+        usernameElement.className = 'text-sm font-semibold text-gray-700';
+        usernameElement.textContent = username;
+
+        const messageContent = document.createElement('span');
+        messageContent.className = 'text-sm text-gray-600 break-words';
+        messageContent.textContent = message;
+
+        messageElement.appendChild(usernameElement);
+        messageElement.appendChild(messageContent);
+
+        chatMessages.appendChild(messageElement);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function sendChatMessage() {
+        const message = chatInput.value.trim();
+        if (message && isMultiplayer) {
+            ticTacToeClient.sendChatMessage(message);
+            chatInput.value = '';
+        }
+    }
+
+    // Event listeners - Chat
+    chatToggle.addEventListener('click', () => {
+        if (isMultiplayer) {
+            chatWindow.classList.toggle('hidden');
+        }
+    });
+
+    chatClose.addEventListener('click', () => {
+        chatWindow.classList.add('hidden');
+    });
+
+    chatSend.addEventListener('click', sendChatMessage);
+
+    chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            sendChatMessage();
+        }
+    });
 
     // Initialize UI
     showScreen(welcomeScreen);

@@ -151,6 +151,20 @@ class TicTacToeClient {
                 this.gameCallbacks.onDisconnect();
             }
         });
+
+        // Chat events
+        this.socket.on('chatMessage', (data) => {
+            if (this.gameCallbacks.onChatMessage) {
+                this.gameCallbacks.onChatMessage(data);
+            }
+        });
+
+        // Chat history
+        this.socket.on('chatHistory', (messages) => {
+            if (this.gameCallbacks.onChatHistory) {
+                this.gameCallbacks.onChatHistory(messages);
+            }
+        });
     }
 
     // Register callback functions
@@ -263,6 +277,17 @@ class TicTacToeClient {
     disconnect() {
         if (this.socket) {
             this.socket.disconnect();
+        }
+    }
+
+    // Chat methods
+    sendChatMessage(message) {
+        if (this.socket && this.room) {
+            this.socket.emit('chatMessage', {
+                roomId: this.roomId,
+                message: message,
+                username: this.getSavedUsername()
+            });
         }
     }
 }

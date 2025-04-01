@@ -6,6 +6,9 @@ class GameRoom {
         this.gameState = ['', '', '', '', '', '', '', '', ''];
         this.gameActive = false;
         this.scores = { X: 0, O: 0, draws: 0 };
+        this.createdAt = Date.now();
+        this.lastActivity = Date.now();
+        this.messages = []; // Add messages array to store chat history
     }
 
     // Add a player to the room
@@ -170,16 +173,29 @@ class GameRoom {
         };
     }
 
-    // Get room state
-    getRoomState() {
+    // Get room state including chat messages
+    getState() {
         return {
             id: this.id,
             players: this.players,
             currentPlayer: this.currentPlayer,
             gameState: this.gameState,
             gameActive: this.gameActive,
-            scores: this.scores
+            scores: this.scores,
+            messages: this.messages // Include messages in room state
         };
+    }
+
+    // Add chat message to room
+    addChatMessage(username, message) {
+        const chatMessage = {
+            username,
+            message,
+            timestamp: Date.now()
+        };
+        this.messages.push(chatMessage);
+        this.lastActivity = Date.now();
+        return chatMessage;
     }
 }
 

@@ -44,7 +44,7 @@ class GameManager {
             this.playerRooms.set(socketId, roomId);
             return {
                 success: true,
-                room: room.getRoomState(),
+                room: room.getState(),
                 player: room.getPlayerBySocketId(socketId)
             };
         }
@@ -99,7 +99,7 @@ class GameManager {
 
         return {
             success: true,
-            roomState: room.getRoomState(),
+            roomState: room.getState(),
             result: result.result
         };
     }
@@ -114,7 +114,7 @@ class GameManager {
         const result = room.resetGame();
         return {
             success: true,
-            roomState: room.getRoomState()
+            roomState: room.getState()
         };
     }
 

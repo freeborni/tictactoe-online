@@ -108,6 +108,11 @@ io.on('connection', (socket) => {
                 });
                 
                 console.log(`Player ${user.username} joined room: ${roomId}`);
+
+                // Send chat history to the joining player
+                if (room.messages && room.messages.length > 0) {
+                    socket.emit('chatHistory', room.messages);
+                }
             } else {
                 socket.emit('error', { message: result.message });
             }
@@ -128,7 +133,7 @@ io.on('connection', (socket) => {
                 
                 // Notify other players in the room
                 socket.to(result.roomId).emit('playerDisconnected', {
-                    roomState: result.room ? result.room.getRoomState() : null
+                    roomState: result.room ? result.room.getState() : null
                 });
                 
                 // Notify the player
@@ -285,6 +290,20 @@ io.on('connection', (socket) => {
         }
     });
 
+    // Handle chat messages
+    socket.on('chatMessage', (data) => {
+        const { roomId, message, username } = data;
+        const room = gameManager.getRoom(roomId);
+
+        if (room) {
+            // Add message to room
+            const chatMessage = room.addChatMessage(username, message);
+
+            // Broadcast message to all players in the room
+            io.to(roomId).emit('chatMessage', chatMessage);
+        }
+    });
+
     // Handle disconnection
     socket.on('disconnect', () => {
         try {
@@ -293,7 +312,7 @@ io.on('connection', (socket) => {
             if (result && result.roomId) {
                 // Notify other players in the room
                 socket.to(result.roomId).emit('playerDisconnected', {
-                    roomState: result.room ? result.room.getRoomState() : null
+                    roomState: result.room ? result.room.getState() : null
                 });
                 
                 console.log(`Player disconnected from room: ${result.roomId}`);
