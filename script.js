@@ -526,6 +526,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             
+            soundManager.play('move');
+
             // Update game state and UI
             gameState[clickedCellIndex] = currentPlayer;
             updateCellUI(clickedCellIndex, currentPlayer);
@@ -546,6 +548,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (roundWon) {
+                soundManager.play('win');
                 handleWin(currentPlayer, winningCombo, scores);
                 gameActive = false;
                 return;
@@ -900,6 +903,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (move !== -1) {
             gameState[move] = aiPlayer;
             updateCellUI(move, aiPlayer);
+            soundManager.play('move');
 
             // Check for win or draw
             let roundWon = false;
