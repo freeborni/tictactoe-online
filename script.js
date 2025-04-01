@@ -641,15 +641,46 @@ document.addEventListener('DOMContentLoaded', () => {
         showScreen(leaderboardScreen);
     });
     
-    createRoomBtn.addEventListener('click', () => {
-        showScreen(gameModeScreen);
-    });
-    
-    joinRoomBtn.addEventListener('click', () => {
-        const roomId = roomIdInput.value.trim().toUpperCase();
-        const username = usernameInput.value.trim();
+    // Reset game mode and state
+    function resetGameMode() {
+        isSinglePlayer = false;
+        isMultiplayer = true;
+        gameActive = false;
+        currentPlayer = 'X';
+        gameState = ['', '', '', '', '', '', '', '', ''];
+        scores = { X: 0, O: 0, draws: 0 };
+        resetGameUI();
+    }
 
+    // Event listeners - Game mode selection
+    singlePlayerBtn.addEventListener('click', () => {
+        isSinglePlayer = true;
+        isMultiplayer = false;
+        showScreen(gameScreen);
+        resetGameUI();
+        gameStatus.textContent = 'Your turn (X)';
+        gameActive = true;
+    });
+
+    multiplayerBtn.addEventListener('click', () => {
+        resetGameMode();
+        showScreen(homeScreen);
+    });
+
+    // Event listeners - Room actions
+    createRoomBtn.addEventListener('click', () => {
+        resetGameMode();
+        const username = ticTacToeClient.getSavedUsername();
+        ticTacToeClient.createRoom(username);
+        showScreen(waitingScreen);
+    });
+
+    joinRoomBtn.addEventListener('click', () => {
+        resetGameMode();
+        const roomId = roomIdInput.value.trim();
+        const username = ticTacToeClient.getSavedUsername();
         ticTacToeClient.joinRoom(roomId, username);
+        showScreen(waitingScreen);
     });
     
     // Event listeners - Waiting screen
@@ -708,30 +739,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     // Event listeners - Game mode screen
-    singlePlayerBtn.addEventListener('click', () => {
-        isMultiplayer = false;
-        isSinglePlayer = true;
-        gameActive = true;
-        currentPlayer = 'X';
-        gameState = ['', '', '', '', '', '', '', '', ''];
-        scores = { X: 0, O: 0, draws: 0 };
-        showScreen(gameScreen);
-        updateTurnIndicator();
-        updateCellsInteractivity();
-        // Fetch updated user stats when starting a new game
-        const username = ticTacToeClient.getSavedUsername();
-        if (username) {
-            ticTacToeClient.getUserStats(username);
-        }
-    });
-
-    multiplayerBtn.addEventListener('click', () => {
-        isMultiplayer = true;
-        isSinglePlayer = false;
-        ticTacToeClient.createRoom();
-        showScreen(waitingScreen);
-    });
-
     backToHomeFromModeBtn.addEventListener('click', () => {
         showScreen(homeScreen);
     });
