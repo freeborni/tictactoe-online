@@ -79,10 +79,21 @@
                     class="w-full text-white py-2.5 px-6 rounded-xl text-lg font-semibold bg-gradient-to-r from-teal-400 to-blue-500 hover:-translate-y-0.5 hover:shadow-lg transition-all">
                     Join Game
                 </button>
+                
                 <button id="view-leaderboard-btn"
                     class="w-full bg-gray-600 hover:bg-gray-700 text-white py-2.5 px-6 rounded-xl text-lg font-semibold transition-all">
                     View Leaderboard
                 </button>
+<div class="mt-2 text-center">
+    <button id="home-how-to-play" class="text-gray-500 hover:text-gray-700 text-sm flex items-center mx-auto">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        How to Play
+    </button>
+</div>
             </div>
 
             <div id="connection-status" class="mt-4 text-center text-sm text-gray-500">
@@ -220,9 +231,19 @@
                     <div class="cell bg-white h-24 md:h-28 flex items-center justify-center text-5xl font-bold rounded-xl shadow-lg cursor-pointer"
                         data-index="8"></div>
                 </div>
-                <button id="leave-game-btn" class="bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors px-4 py-2 rounded-md">
-                    Leave Game
-                </button>
+                <div class="flex justify-between items-center">
+                    <button id="game-how-to-play" class="text-gray-500 hover:text-gray-700 flex items-center px-4 py-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        How to Play
+                    </button>
+                    <button id="leave-game-btn" class="bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors px-4 py-2 rounded-md">
+                        Leave Game
+                    </button>
+                    </div>
             </div>
 <!-- Chat Widget -->
 <div id="chat-widget" class="fixed bottom-4 right-4 z-50">
@@ -294,8 +315,57 @@
         <span id="notification-message"></span>
     </div>
 
+    <!-- How to Play Modal -->
+    <div id="how-to-play-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-2xl font-bold text-gray-800">How to Play</h3>
+                <button id="close-how-to-play" class="text-gray-500 hover:text-gray-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <h4 class="font-semibold text-lg text-gray-800 mb-2">Game Rules:</h4>
+                    <ul class="list-disc list-inside text-gray-600 space-y-2">
+                        <li>Players take turns placing their symbol (X or O) on an empty cell</li>
+                        <li>First player is assigned X, second player is O</li>
+                        <li>A player wins by getting 3 of their symbols in a row:</li>
+                        <ul class="list-disc list-inside ml-4 text-gray-500">
+                            <li>Horizontally (across)</li>
+                            <li>Vertically (up and down)</li>
+                            <li>Diagonally</li>
+                        </ul>
+                        <li>If all cells are filled and no player has won, the game is a draw</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-lg text-gray-800 mb-2">How to Start:</h4>
+                    <ul class="list-disc list-inside text-gray-600 space-y-2">
+                        <li>Create a new multiplayer game and share the room ID with a friend</li>
+                        <li>You can also join an existing game using a room ID</li>
+                        <li>Crea te a new single player game and play against the computer</li>
+                        <li>Wait for your turn and click any empty cell to make a move</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="socket-client.js"></script>
     <script src="script.js"></script>
 </body>
+
+</html>
+</html>
+
+</html>
+
+</html>
+
+</html>
 
 </html>

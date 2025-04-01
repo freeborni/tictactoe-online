@@ -62,6 +62,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatInput = document.getElementById('chat-input');
     const chatSend = document.getElementById('chat-send');
 
+    // DOM elements - How to Play
+    const howToPlayModal = document.getElementById('how-to-play-modal');
+    const homeHowToPlay = document.getElementById('home-how-to-play');
+    const gameHowToPlay = document.getElementById('game-how-to-play');
+    const closeHowToPlay = document.getElementById('close-how-to-play');
+
     // Sound manager
     const soundManager = {
         sounds: {
@@ -998,6 +1004,28 @@ document.addEventListener('DOMContentLoaded', () => {
     chatInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             sendChatMessage();
+        }
+    });
+
+    // Event listeners - How to Play
+    function showHowToPlay() {
+        howToPlayModal.classList.remove('hidden');
+        howToPlayModal.classList.add('flex');
+    }
+
+    function hideHowToPlay() {
+        howToPlayModal.classList.add('hidden');
+        howToPlayModal.classList.remove('flex');
+    }
+
+    homeHowToPlay.addEventListener('click', showHowToPlay);
+    gameHowToPlay.addEventListener('click', showHowToPlay);
+    closeHowToPlay.addEventListener('click', hideHowToPlay);
+
+    // Close modal when clicking outside
+    howToPlayModal.addEventListener('click', (e) => {
+        if (e.target === howToPlayModal) {
+            hideHowToPlay();
         }
     });
 
