@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // DOM elements - Screens
     const welcomeScreen = document.getElementById('welcome-screen');
     const homeScreen = document.getElementById('home-screen');
+    const gameModeScreen = document.getElementById('game-mode-screen');
     const waitingScreen = document.getElementById('waiting-screen');
     const gameScreen = document.getElementById('game-screen');
     const leaderboardScreen = document.getElementById('leaderboard-screen');
@@ -11,7 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const enterGameBtn = document.getElementById('enter-game-btn');
     
     // DOM elements - Home screen
-    const userStatsDiv = document.getElementById('user-stats');
     const userWins = document.getElementById('user-wins');
     const userLosses = document.getElementById('user-losses');
     const userDraws = document.getElementById('user-draws');
@@ -22,12 +22,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const connectionStatus = document.getElementById('connection-status');
     const viewLeaderboardBtn = document.getElementById('view-leaderboard-btn');
     
+    // DOM elements - Game mode screen
+    const singlePlayerBtn = document.getElementById('single-player-btn');
+    const multiplayerBtn = document.getElementById('multiplayer-btn');
+    const backToHomeFromModeBtn = document.getElementById('back-to-home-from-mode-btn');
+
     // DOM elements - Waiting screen
     const roomIdDisplay = document.getElementById('room-id-display');
     const copyRoomIdBtn = document.getElementById('copy-room-id');
     const cancelWaitBtn = document.getElementById('cancel-wait-btn');
 
     // DOM elements - Leaderboard screen
+    const leaderboardContent = document.getElementById('leaderboard-content');
     const backToHomeBtn = document.getElementById('back-to-home-btn');
 
     // DOM elements - Game screen
@@ -53,6 +59,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let gameState = ['', '', '', '', '', '', '', '', ''];
     let scores = { X: 0, O: 0, draws: 0 };
     let isMultiplayer = true;
+    let isSinglePlayer = false;
+    let aiPlayer = 'O'; // AI will always play as O
     
     // Winning combinations
     const winningConditions = [
@@ -124,14 +132,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 userWins.textContent = data.wins || 0;
                 userLosses.textContent = data.losses || 0;
                 userDraws.textContent = data.draws || 0;
+                console.log({ data });
                 
                 // Show username
                 if (data.username) {
                     usernameDisplay.textContent = data.username;
                 }
-                
-                // Show stats div
-                userStatsDiv.classList.remove('hidden');
             }
         });
         
@@ -213,7 +219,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // Show notification toast
-
     function showNotification(message, isError = false) {
         notificationMessage.textContent = message;
         
@@ -231,21 +236,24 @@ document.addEventListener('DOMContentLoaded', () => {
             notificationToast.classList.remove('notification-show');
         }, 3000);
     }
-    
-    // DOM elements - Leaderboard screen
-    const leaderboardContent = document.getElementById('leaderboard-content');
-    const canceWaitBtn = document.getElementById('cancel-wait-btn');
-    
+
     // Show a specific screen and hide others
     function showScreen(screenToShow) {
-        [welcomeScreen, homeScreen, waitingScreen, gameScreen, leaderboardScreen].forEach(screen => {
+        [welcomeScreen, homeScreen, gameModeScreen, waitingScreen, gameScreen, leaderboardScreen].forEach(screen => {
             if (screen === screenToShow) {
                 screen.classList.remove('hidden');
                 if (screen === gameScreen) {
-                    const players = ticTacToeClient.room.players;
-                    gamePlayers.textContent = `${players[0].username} vs ${players[1].username}`;
-                    document.getElementById('player-x').textContent = players.find(player => player.symbol === 'X').username;
-                    document.getElementById('player-o').textContent = players.find(player => player.symbol === 'O').username;
+                    if (isSinglePlayer) {
+                        const username = ticTacToeClient.getSavedUsername() || 'Player';
+                        gamePlayers.textContent = `${username} vs Computer`;
+                        document.getElementById('player-x').textContent = username;
+                        document.getElementById('player-o').textContent = 'Computer';
+                    } else {
+                        const players = ticTacToeClient.room.players;
+                        gamePlayers.textContent = `${players[0].username} vs ${players[1].username}`;
+                        document.getElementById('player-x').textContent = players.find(player => player.symbol === 'X').username;
+                        document.getElementById('player-o').textContent = players.find(player => player.symbol === 'O').username;
+                    }
                 }
             } else {
                 screen.classList.add('hidden');
@@ -270,17 +278,22 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Update turn indicator
     function updateTurnIndicator() {
-        playerTurn.textContent = currentPlayerTurn(currentPlayer);
+        if (isSinglePlayer) {
+            playerTurn.textContent = currentPlayer === 'X' ? 'Your turn' : "Computer's turn";
+        } else {
+            playerTurn.textContent = currentPlayerTurn(currentPlayer);
+        }
 
         // Update game status message
         if (!gameActive) {
-            // Game is over, status message is already set by handleWin or handleDraw
             return;
         } else if (isMultiplayer && !ticTacToeClient.isMyTurn()) {
             gameStatus.textContent = waitingForOpponent();
             gameStatus.classList.add('animate-pulse');
         } else {
-            gameStatus.textContent = 'Your turn...';
+            gameStatus.textContent = isSinglePlayer ?
+                (currentPlayer === 'X' ? 'Your turn...' : "Computer is thinking...") :
+                'Your turn...';
             gameStatus.classList.add('animate-pulse');
         }
     }
@@ -289,9 +302,16 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateCellsInteractivity() {
         if (isMultiplayer) {
             const isMyTurn = ticTacToeClient.isMyTurn();
-            
             cells.forEach(cell => {
                 if (isMyTurn && gameActive) {
+                    cell.classList.remove('disabled');
+                } else {
+                    cell.classList.add('disabled');
+                }
+            });
+        } else {
+            cells.forEach(cell => {
+                if (gameActive && currentPlayer === 'X') {
                     cell.classList.remove('disabled');
                 } else {
                     cell.classList.add('disabled');
@@ -335,7 +355,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Handle win condition
     function handleWin(winner, winningCombo, updatedScores) {
-        const isYou = ticTacToeClient.getMySymbol() === winner;
+        const isYou = isSinglePlayer ? winner === 'X' : ticTacToeClient.getMySymbol() === winner;
         gameStatus.textContent = winningMessage(winner, isYou);
         gameStatus.classList.add('animate-pulse');
         
@@ -346,8 +366,33 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         // Update score
-        scores = updatedScores || scores;
+        if (isSinglePlayer) {
+            // In single player mode, update scores locally
+            if (winner === 'X') {
+                scores.X = (scores.X || 0) + 1;
+            } else {
+                scores.O = (scores.O || 0) + 1;
+            }
+        } else {
+        // In multiplayer mode, use server scores
+            scores = updatedScores || scores;
+        }
         updateScoreDisplay();
+
+        // Update user stats in single player mode
+        if (isSinglePlayer) {
+            const username = ticTacToeClient.getSavedUsername();
+            if (username) {
+                if (winner === 'X') {
+                    // User won
+                    ticTacToeClient.updateUserStats(username, 1, 0, 0);
+                } else {
+                    // Computer won
+                    ticTacToeClient.updateUserStats(username, 0, 1, 0);
+                }
+            }
+        }
+
         updateCellsInteractivity();
     }
     
@@ -355,8 +400,25 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleDraw(updatedScores) {
         gameStatus.textContent = drawMessage();
         gameStatus.classList.add('animate-pulse');
-        scores = updatedScores || scores;
+
+        // Update score
+        if (isSinglePlayer) {
+            // In single player mode, update scores locally
+            scores.draws = (scores.draws || 0) + 1;
+        } else {
+        // In multiplayer mode, use server scores
+            scores = updatedScores || scores;
+        }
         updateScoreDisplay();
+
+        // Update user stats in single player mode
+        if (isSinglePlayer) {
+            const username = ticTacToeClient.getSavedUsername();
+            if (username) {
+                ticTacToeClient.updateUserStats(username, 0, 0, 1);
+            }
+        }
+
         updateCellsInteractivity();
     }
     
@@ -382,16 +444,15 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleCellClick(clickedCellEvent) {
         const clickedCell = clickedCellEvent.target;
         const clickedCellIndex = parseInt(clickedCell.getAttribute('data-index'));
-        
-        // In multiplayer mode, send the move to the server
+
         if (isMultiplayer) {
             // Check if it's the player's turn and the cell is empty
             if (ticTacToeClient.isMyTurn() && gameState[clickedCellIndex] === '' && gameActive) {
                 ticTacToeClient.makeMove(clickedCellIndex);
             }
         } else {
-            // Local game logic (fallback)
-            if (gameState[clickedCellIndex] !== '' || !gameActive) {
+            // Single player mode
+            if (gameState[clickedCellIndex] !== '' || !gameActive || currentPlayer !== 'X') {
                 return;
             }
             
@@ -402,8 +463,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Check for win or draw
             let roundWon = false;
             let winningCombo = [];
-            
-            // Check all winning combinations
+
             for (let i = 0; i < winningConditions.length; i++) {
                 const [a, b, c] = winningConditions[i];
                 const condition = gameState[a] && gameState[a] === gameState[b] && gameState[a] === gameState[c];
@@ -414,15 +474,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     break;
                 }
             }
-            
-            // Handle win
+
             if (roundWon) {
                 handleWin(currentPlayer, winningCombo, scores);
                 gameActive = false;
                 return;
             }
-            
-            // Handle draw
+
             const roundDraw = !gameState.includes('');
             if (roundDraw) {
                 handleDraw(scores);
@@ -430,9 +488,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             
-            // Continue game with next player
-            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            // Switch to AI's turn
+            currentPlayer = aiPlayer;
             updateTurnIndicator();
+
+            // Make AI move after a short delay
+            setTimeout(makeAIMove, 500);
         }
     }
     
@@ -443,6 +504,9 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         
+        // Filter out computer players
+        const humanPlayers = players.filter(player => player.username !== 'Computer');
+
         let html = '<table class="w-full">';
         html += '<thead><tr class="border-b border-gray-200">';
         html += '<th class="text-left py-2">Player</th>';
@@ -451,7 +515,7 @@ document.addEventListener('DOMContentLoaded', () => {
         html += '<th class="text-center py-2">Draws</th>';
         html += '</tr></thead><tbody>';
         
-        players.forEach((player, index) => {
+        humanPlayers.forEach((player, index) => {
             html += `<tr class="${index % 2 === 0 ? 'bg-gray-50' : ''}">`;
             html += `<td class="py-2">${player.username}</td>`;
             html += `<td class="text-center py-2">${player.wins}</td>`;
@@ -494,7 +558,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // Event listeners - Leaderboard screen
-    canceWaitBtn.addEventListener('click', () => {
+    cancelWaitBtn.addEventListener('click', () => {
         showScreen(homeScreen);
     });
     
@@ -505,8 +569,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     createRoomBtn.addEventListener('click', () => {
-        const username = usernameInput.value.trim();
-        ticTacToeClient.createRoom(username);
+        showScreen(gameModeScreen);
     });
     
     joinRoomBtn.addEventListener('click', () => {
@@ -571,6 +634,236 @@ document.addEventListener('DOMContentLoaded', () => {
         showNotification('Left the room');
     });
     
+    // Event listeners - Game mode screen
+    singlePlayerBtn.addEventListener('click', () => {
+        isMultiplayer = false;
+        isSinglePlayer = true;
+        gameActive = true;
+        currentPlayer = 'X';
+        gameState = ['', '', '', '', '', '', '', '', ''];
+        scores = { X: 0, O: 0, draws: 0 };
+        showScreen(gameScreen);
+        updateTurnIndicator();
+        updateCellsInteractivity();
+        // Fetch updated user stats when starting a new game
+        const username = ticTacToeClient.getSavedUsername();
+        if (username) {
+            ticTacToeClient.getUserStats(username);
+        }
+    });
+
+    multiplayerBtn.addEventListener('click', () => {
+        isMultiplayer = true;
+        isSinglePlayer = false;
+        ticTacToeClient.createRoom();
+        showScreen(waitingScreen);
+    });
+
+    backToHomeFromModeBtn.addEventListener('click', () => {
+        showScreen(homeScreen);
+    });
+
+    // AI Player Logic
+    function findBestMove() {
+        // 1. Check if AI can win
+        const aiWinningMove = findWinningMove(aiPlayer);
+        if (aiWinningMove !== -1) return aiWinningMove;
+
+        // 2. Check if opponent is about to win and block it
+        const opponentWinningMove = findWinningMove('X');
+        if (opponentWinningMove !== -1) return opponentWinningMove;
+
+        // 3. Look for moves that create winning opportunities
+        const strategicMove = findStrategicMove();
+        if (strategicMove !== -1) return strategicMove;
+
+        // 4. Use minimax to find the best move
+        const minimaxMove = findMinimaxMove();
+        if (minimaxMove !== -1) return minimaxMove;
+
+        // 5. Take center if available
+        if (gameState[4] === '') return 4;
+
+        // 6. Take corners
+        const corners = [0, 2, 6, 8];
+        const availableCorners = corners.filter(corner => gameState[corner] === '');
+        if (availableCorners.length > 0) {
+            return availableCorners[Math.floor(Math.random() * availableCorners.length)];
+        }
+
+        // 7. Pick a random available spot
+        const availableSpaces = gameState.map((space, index) => space === '' ? index : -1).filter(index => index !== -1);
+        return availableSpaces[Math.floor(Math.random() * availableSpaces.length)];
+    }
+
+    function findWinningMove(player) {
+        for (let i = 0; i < winningConditions.length; i++) {
+            const [a, b, c] = winningConditions[i];
+            const spaces = [gameState[a], gameState[b], gameState[c]];
+
+            // If two spaces are filled by the player and one is empty
+            if (spaces.filter(space => space === player).length === 2 && spaces.includes('')) {
+                // Return the index of the empty space
+                return [a, b, c][spaces.findIndex(space => space === '')];
+            }
+        }
+        return -1;
+    }
+
+    function findStrategicMove() {
+        // Try each available move
+        for (let i = 0; i < gameState.length; i++) {
+            if (gameState[i] === '') {
+                // Simulate AI move
+                gameState[i] = aiPlayer;
+
+                // Check if this move creates a winning opportunity
+                const hasWinningOpportunity = checkWinningOpportunity();
+
+                // Undo the move
+                gameState[i] = '';
+
+                if (hasWinningOpportunity) {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+
+    function checkWinningOpportunity() {
+        // Count how many winning combinations are possible after this move
+        let winningCombos = 0;
+
+        for (let i = 0; i < winningConditions.length; i++) {
+            const [a, b, c] = winningConditions[i];
+            const spaces = [gameState[a], gameState[b], gameState[c]];
+
+            // If this combination has two AI marks and one empty space
+            if (spaces.filter(space => space === aiPlayer).length === 2 && spaces.includes('')) {
+                winningCombos++;
+            }
+        }
+
+        // If there are multiple winning combinations, this is a good strategic move
+        return winningCombos >= 2;
+    }
+
+    function findMinimaxMove() {
+        let bestScore = -Infinity;
+        let bestMove = -1;
+
+        // Try each available move
+        for (let i = 0; i < gameState.length; i++) {
+            if (gameState[i] === '') {
+                // Simulate AI move
+                gameState[i] = aiPlayer;
+
+                // Get score for this move
+                const score = minimax(gameState, 0, false);
+
+                // Undo the move
+                gameState[i] = '';
+
+                // Update best move if this score is better
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestMove = i;
+                }
+            }
+        }
+
+        return bestMove;
+    }
+
+    function minimax(board, depth, isMaximizing) {
+        // Check for terminal states
+        const aiWin = checkWinner(aiPlayer);
+        const playerWin = checkWinner('X');
+        const isDraw = !board.includes('');
+
+        if (aiWin) return 10 - depth;
+        if (playerWin) return depth - 10;
+        if (isDraw) return 0;
+
+        if (isMaximizing) {
+            let bestScore = -Infinity;
+            for (let i = 0; i < board.length; i++) {
+                if (board[i] === '') {
+                    board[i] = aiPlayer;
+                    const score = minimax(board, depth + 1, false);
+                    board[i] = '';
+                    bestScore = Math.max(score, bestScore);
+                }
+            }
+            return bestScore;
+        } else {
+            let bestScore = Infinity;
+            for (let i = 0; i < board.length; i++) {
+                if (board[i] === '') {
+                    board[i] = 'X';
+                    const score = minimax(board, depth + 1, true);
+                    board[i] = '';
+                    bestScore = Math.min(score, bestScore);
+                }
+            }
+            return bestScore;
+        }
+    }
+
+    function checkWinner(player) {
+        for (let i = 0; i < winningConditions.length; i++) {
+            const [a, b, c] = winningConditions[i];
+            if (gameState[a] === player &&
+                gameState[b] === player &&
+                gameState[c] === player) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function makeAIMove() {
+        if (!gameActive || currentPlayer !== aiPlayer) return;
+
+        const move = findBestMove();
+        if (move !== -1) {
+            gameState[move] = aiPlayer;
+            updateCellUI(move, aiPlayer);
+
+            // Check for win or draw
+            let roundWon = false;
+            let winningCombo = [];
+
+            for (let i = 0; i < winningConditions.length; i++) {
+                const [a, b, c] = winningConditions[i];
+                const condition = gameState[a] && gameState[a] === gameState[b] && gameState[a] === gameState[c];
+
+                if (condition) {
+                    roundWon = true;
+                    winningCombo = [a, b, c];
+                    break;
+                }
+            }
+
+            if (roundWon) {
+                handleWin(aiPlayer, winningCombo, scores);
+                gameActive = false;
+                return;
+            }
+
+            const roundDraw = !gameState.includes('');
+            if (roundDraw) {
+                handleDraw(scores);
+                gameActive = false;
+                return;
+            }
+
+            currentPlayer = 'X';
+            updateTurnIndicator();
+        }
+    }
+
     // Initialize UI
     showScreen(welcomeScreen);
 });

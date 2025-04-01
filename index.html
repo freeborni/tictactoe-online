@@ -23,7 +23,6 @@
             <p class="text-gray-600 mb-6 text-center font-semibold text-lg">
                 Play Tic-Tac-Toe online for free! Challenge friends in private rooms or play with random people and compete in
                 real-time. <span class="text-2xl">💙💖💙</span></p>
-            <!-- 💜 -->
 
             <div class="mb-4">
                 <label for="username-input" class="block text-gray-700 mb-2 text-lg">Enter your username:</label>
@@ -40,7 +39,7 @@
         <!-- Home Screen -->
         <div id="home-screen" class="backdrop-blur-md bg-white/95 border border-white/20 p-6 rounded-2xl shadow-2xl hidden">
             <!-- User Stats -->
-            <div id="user-stats" class="mb-4 p-3 bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl hidden">
+            <div id="user-stats" class="mb-4 p-3 bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl">
                 <h2 class="font-bold text-2xl mb-3 text-center">
                     Welcome, <span id="username-display" class="text-purple-600">Player</span>!
                 </h2>
@@ -88,6 +87,32 @@
 
             <div id="connection-status" class="mt-4 text-center text-sm text-gray-500">
                 Connecting to server...
+            </div>
+        </div>
+
+        <!-- Game Mode Selection Screen -->
+        <div id="game-mode-screen"
+            class="backdrop-blur-md bg-white/95 border border-white/20 p-6 rounded-2xl shadow-2xl hidden">
+            <h2
+                class="text-3xl font-bold text-center mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600">
+                Select Game Mode
+            </h2>
+        
+            <div class="space-y-4">
+                <button id="single-player-btn"
+                    class="w-full text-white py-3 px-6 rounded-xl text-lg font-semibold bg-gradient-to-r from-indigo-500 to-purple-600 hover:-translate-y-0.5 hover:shadow-lg transition-all">
+                    Play Against Computer
+                </button>
+        
+                <button id="multiplayer-btn"
+                    class="w-full text-white py-3 px-6 rounded-xl text-lg font-semibold bg-gradient-to-r from-teal-400 to-blue-500 hover:-translate-y-0.5 hover:shadow-lg transition-all">
+                    Play Against Friend
+                </button>
+        
+                <button id="back-to-home-from-mode-btn"
+                    class="w-full bg-gray-600 hover:bg-gray-700 text-white py-3 px-6 rounded-xl text-lg font-semibold transition-all">
+                    Back to Home
+                </button>
             </div>
         </div>
 
