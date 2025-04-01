@@ -646,6 +646,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     joinRoomBtn.addEventListener('click', () => {
+        isMultiplayer = true;
+        isSinglePlayer = false;
         const roomId = roomIdInput.value.trim().toUpperCase();
         const username = usernameInput.value.trim();
 
@@ -718,6 +720,9 @@ document.addEventListener('DOMContentLoaded', () => {
         showScreen(gameScreen);
         updateTurnIndicator();
         updateCellsInteractivity();
+        updateScoreDisplay();
+        resetGameUI();
+
         // Fetch updated user stats when starting a new game
         const username = ticTacToeClient.getSavedUsername();
         if (username) {
