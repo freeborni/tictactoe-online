@@ -3,3 +3,4 @@ tictactoe.db
 node_modules
 **/node_modules/
 .devdbrc
+.DS_Store

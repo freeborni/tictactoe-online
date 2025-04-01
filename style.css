@@ -594,6 +594,16 @@ video {
   opacity: 0.8;
 }
 
+.connection-online .dot {
+  --tw-bg-opacity: 1;
+  background-color: rgb(34 197 94 / var(--tw-bg-opacity, 1));
+}
+
+.connection-offline .dot {
+  --tw-bg-opacity: 1;
+  background-color: rgb(239 68 68 / var(--tw-bg-opacity, 1));
+}
+
 .screen-transition.hidden {
   pointer-events: none;
   --tw-translate-y: 0.625rem;
@@ -630,6 +640,10 @@ video {
 
 .right-0 {
   right: 0px;
+}
+
+.top-0 {
+  top: 0px;
 }
 
 .z-50 {
@@ -758,6 +772,10 @@ video {
   height: 16rem;
 }
 
+.h-3 {
+  height: 0.75rem;
+}
+
 .min-h-screen {
   min-height: 100vh;
 }
@@ -788,6 +806,10 @@ video {
 
 .w-80 {
   width: 20rem;
+}
+
+.w-3 {
+  width: 0.75rem;
 }
 
 .max-w-lg {

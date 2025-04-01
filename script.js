@@ -62,6 +62,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatInput = document.getElementById('chat-input');
     const chatSend = document.getElementById('chat-send');
 
+    // Sound manager
+    const soundManager = {
+        sounds: {
+            move: new Audio('./assets/sounds/move.mp3'),
+            win: new Audio('./assets/sounds/win.mp3')
+        },
+        play(soundName) {
+            const sound = this.sounds[soundName];
+            if (sound) {
+                sound.currentTime = 0; // Reset sound to start
+                sound.volume = 0.5; // Set volume to 50%
+                sound.play().catch(error => console.log('Sound play failed:', error));
+            }
+        }
+    };
+
     // Game state
     let gameActive = false;
     let currentPlayer = 'X';
@@ -199,9 +215,16 @@ document.addEventListener('DOMContentLoaded', () => {
             // Update the UI
             updateCellUI(cellIndex, roomState.gameState[cellIndex]);
             
+            // Play move sound for both players
+            soundManager.play('move');
+
             // Handle game result
             if (result.status === 'win') {
                 handleWin(result.winner, result.winningCombo, result.scores);
+                // Only play win sound if the current player won
+                if (result.winner === ticTacToeClient.getMySymbol()) {
+                    soundManager.play('win');
+                }
             } else if (result.status === 'draw') {
                 handleDraw(result.scores);
             }
@@ -923,6 +946,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
         chatMessages.appendChild(messageElement);
         chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        // Show unread message notification if chat is closed
+        if (username !== ticTacToeClient.getSavedUsername() && chatWindow.classList.contains('hidden')) {
+            showUnreadMessageNotification();
+        }
+    }
+
+    function showUnreadMessageNotification() {
+        // Create notification dot if it doesn't exist
+        let notificationDot = document.getElementById('chat-notification-dot');
+        if (!notificationDot) {
+            notificationDot = document.createElement('div');
+            notificationDot.id = 'chat-notification-dot';
+            notificationDot.className = 'absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full animate-pulse';
+            chatToggle.appendChild(notificationDot);
+        }
+    }
+
+    function hideUnreadMessageNotification() {
+        const notificationDot = document.getElementById('chat-notification-dot');
+        if (notificationDot) {
+            notificationDot.remove();
+        }
     }
 
     function sendChatMessage() {
@@ -937,6 +983,9 @@ document.addEventListener('DOMContentLoaded', () => {
     chatToggle.addEventListener('click', () => {
         if (isMultiplayer) {
             chatWindow.classList.toggle('hidden');
+            if (!chatWindow.classList.contains('hidden')) {
+                hideUnreadMessageNotification();
+            }
         }
     });
 
