@@ -1,12 +1,15 @@
 # 🎮 Tic-Tac-Toe Online
 
-A modern, real-time multiplayer Tic-Tac-Toe game built with HTML, Tailwind CSS, and JavaScript. Play with friends in private rooms or challenge random opponents online!
+A modern Tic-Tac-Toe game built with HTML, Tailwind CSS, and JavaScript. Play against the computer in single-player mode or challenge friends in multiplayer mode with real-time chat!
 
 ## ✨ Features
 
-- 🎯 Real-time multiplayer gameplay
+- 🎯 Two game modes:
+  - Single-player mode against AI
+  - Multiplayer mode with real-time gameplay
 - 🔒 Private room creation with room IDs
 - 👥 Random matchmaking
+- 💬 In-game chat system
 - 📊 Global leaderboard
 - 🏆 Player statistics tracking (wins, losses, draws)
 - 💫 Modern, responsive UI with beautiful gradients
@@ -32,16 +35,23 @@ git clone https://github.com/freeborni/tictactoe-online.git
 cd tic-tac-toe
 ```
 
-3. Open `index.html` in your web browser or serve it using a local server.
+3. Install dependencies:
+```bash
+npm install
+```
+
+4. Open `index.html` in your web browser or serve it using a local server.
 
 ## 🎮 How to Play
 
 1. Enter your username to start
-2. Choose to either:
-   - Create a new game and share the room ID with friends
-   - Join an existing game using a room ID
-   - Join a random game
-3. Play against your opponent in real-time
+2. Choose your game mode:
+   - Single-player: Play against the computer
+   - Multiplayer: 
+     - Create a new game and share the room ID with friends
+     - Join an existing game using a room ID
+     - Join a random game
+3. In multiplayer mode, use the chat feature to communicate with your opponent
 4. Track your progress on the global leaderboard
 
 ## 🛠️ Built With
@@ -50,7 +60,8 @@ cd tic-tac-toe
 - HTML
 - Tailwind CSS (with some custom CSS)
 - JavaScript
-- WebSocket for real-time communication
+- Socket.IO for real-time communication
+- Node.js for the server
 
 ## 📁 Project Structure
 
@@ -60,7 +71,10 @@ tic-tac-toe/
 ├── style.css          # Base styles
 ├── custom.css         # Custom styles
 ├── script.js          # Game logic
-└── socket-client.js   # WebSocket client implementation
+├── socket-client.js   # Socket.IO client implementation
+├── server.js          # Socket.IO server implementation
+├── package.json       # Project dependencies
+└── node_modules/      # Installed dependencies
 ```
 
 ## 🤝 Contributing

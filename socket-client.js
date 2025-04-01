@@ -1,4 +1,5 @@
 // Socket.IO client for Tic-Tac-Toe multiplayer game
+import { io } from 'socket.io-client';
 
 class TicTacToeClient {
     constructor() {
@@ -15,27 +16,17 @@ class TicTacToeClient {
     // Initialize the socket connection
     init(serverUrl = '') {
         return new Promise((resolve, reject) => {
-            // Load Socket.IO client script dynamically
-            const script = document.createElement('script');
-            script.src = 'https://cdn.socket.io/4.7.2/socket.io.min.js';
-            script.integrity = 'sha384-mZLF4UVrpi/QTWPA7BjNPEnkIfRFn4ZEO3Qt/HFklTJBj/gBOV8G3HcKn4NfQblz';
-            script.crossOrigin = 'anonymous';
-            
-            script.onload = () => {
-                // Connect to the server
+            try {
+            // Connect to the server using local Socket.IO client
                 this.socket = io(serverUrl);
                 
                 // Set up event listeners
                 this.setupEventListeners();
                 
                 resolve();
-            };
-            
-            script.onerror = () => {
-                reject(new Error('Failed to load Socket.IO client'));
-            };
-            
-            document.head.appendChild(script);
+            } catch (error) {
+                reject(new Error('Failed to initialize Socket.IO client: ' + error.message));
+            }
         });
     }
 
