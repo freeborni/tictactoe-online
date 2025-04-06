@@ -174,6 +174,33 @@
             </div>
         </div>
 
+        <!-- Symbol Selection Screen -->
+        <div id="symbol-screen" class="backdrop-blur-md bg-white/95 border border-white/20 p-6 rounded-2xl shadow-2xl hidden">
+            <h2
+                class="text-3xl font-bold text-center mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600">
+                Choose Your Symbol
+            </h2>
+        
+            <div class="flex justify-center space-x-4 mb-6">
+                <button id="select-x-btn"
+                    class="w-32 h-32 flex flex-col items-center justify-center text-white py-3 px-6 rounded-xl text-lg font-semibold bg-gradient-to-r from-indigo-500 to-purple-600 hover:-translate-y-0.5 hover:shadow-lg transition-all">
+                    <span class="text-5xl mb-2">X</span>
+                    <span class="text-sm">Go First</span>
+                </button>
+        
+                <button id="select-o-btn"
+                    class="w-32 h-32 flex flex-col items-center justify-center text-white py-3 px-6 rounded-xl text-lg font-semibold bg-gradient-to-r from-teal-400 to-blue-500 hover:-translate-y-0.5 hover:shadow-lg transition-all">
+                    <span class="text-5xl mb-2">O</span>
+                    <span class="text-sm">Go Second</span>
+                </button>
+            </div>
+        
+            <button id="back-to-difficulty-btn"
+                class="bg-gray-200 w-full text-gray-700 hover:bg-gray-300 transition-colors px-4 py-2 rounded-md">
+                Back to Difficulty
+            </button>
+        </div>
+
         <!-- Waiting Screen -->
         <div id="waiting-screen" class="backdrop-blur-md bg-white/95 border border-white/20 p-6 rounded-2xl shadow-2xl hidden">
             <h2

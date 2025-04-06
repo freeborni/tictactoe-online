@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const waitingScreen = document.getElementById('waiting-screen');
     const gameScreen = document.getElementById('game-screen');
     const leaderboardScreen = document.getElementById('leaderboard-screen');
+    const symbolScreen = document.getElementById('symbol-screen');
 
     // DOM elements - Welcome screen
     const usernameInput = document.getElementById('username-input');
@@ -94,6 +95,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const gameHowToPlay = document.getElementById('game-how-to-play');
     const closeHowToPlay = document.getElementById('close-how-to-play');
 
+    // DOM elements - Symbol screen
+    const selectXBtn = document.getElementById('select-x-btn');
+    const selectOBtn = document.getElementById('select-o-btn');
+    const backToDifficultyBtn = document.getElementById('back-to-difficulty-btn');
+
     // Sound manager
     const soundManager = {
         sounds: {
@@ -119,6 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let isSinglePlayer = false;
     let aiPlayer = 'O'; // AI will always play as O
     let aiDifficulty = 'normal'; // Default difficulty
+    let playerSymbol = 'X'; // Added for symbol selection
 
     // Winning combinations
     const winningConditions = [
@@ -340,7 +347,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Show a specific screen and hide others
     function showScreen(screenToShow) {
-        [welcomeScreen, homeScreen, gameModeScreen, difficultyScreen, waitingScreen, gameScreen, leaderboardScreen].forEach(screen => {
+        [welcomeScreen, homeScreen, gameModeScreen, difficultyScreen, waitingScreen, gameScreen, leaderboardScreen, symbolScreen].forEach(screen => {
             if (screen === screenToShow) {
                 screen.classList.remove('hidden');
                 if (screen === gameScreen) {
@@ -379,25 +386,33 @@ document.addEventListener('DOMContentLoaded', () => {
         updateCellsInteractivity();
     }
 
-    // Update turn indicator
-    function updateTurnIndicator() {
-        if (isSinglePlayer) {
-            playerTurn.textContent = currentPlayer === 'X' ? 'Your turn' : "Computer's turn";
-        } else {
-            playerTurn.textContent = currentPlayerTurn(currentPlayer);
-        }
-
-        // Update game status message
+    // Update game status message
+    function updateGameStatus() {
         if (!gameActive) {
             return;
         } else if (isMultiplayer && !ticTacToeClient.isMyTurn()) {
             gameStatus.textContent = waitingForOpponent();
             gameStatus.classList.add('animate-pulse');
         } else {
-            gameStatus.textContent = isSinglePlayer ?
-                (currentPlayer === 'X' ? 'Your turn...' : "Computer is thinking...") :
-                'Your turn...';
+            if (isSinglePlayer) {
+                if (currentPlayer === playerSymbol) {
+                    gameStatus.textContent = 'Your turn...';
+                } else {
+                    gameStatus.textContent = "Computer is thinking...";
+                }
+            } else {
+                gameStatus.textContent = 'Your turn...';
+            }
             gameStatus.classList.add('animate-pulse');
+        }
+    }
+
+    // Update turn indicator
+    function updateTurnIndicator() {
+        if (isSinglePlayer) {
+            playerTurn.textContent = currentPlayer === playerSymbol ? 'Your turn' : "Computer's turn";
+        } else {
+            playerTurn.textContent = currentPlayerTurn(currentPlayer);
         }
     }
 
@@ -414,7 +429,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         } else {
             cells.forEach(cell => {
-                if (gameActive && currentPlayer === 'X') {
+                if (gameActive && currentPlayer === playerSymbol) {
                     cell.classList.remove('disabled');
                 } else {
                     cell.classList.add('disabled');
@@ -453,7 +468,12 @@ document.addEventListener('DOMContentLoaded', () => {
         gameStatus.classList.remove('animate-pulse');
         updateTurnIndicator();
         updateCellsInteractivity();
-        updateYourPlayerIcon(); // update your own user icon
+        updateYourPlayerIcon();
+
+        // If AI goes first, make its move
+        if (isSinglePlayer && aiPlayer === 'X') {
+            setTimeout(makeAIMove, 500);
+        }
     }
 
     // Handle win condition
@@ -563,7 +583,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } else {
             // Single player mode
-            if (gameState[clickedCellIndex] !== '' || !gameActive || currentPlayer !== 'X') {
+            if (gameState[clickedCellIndex] !== '' || !gameActive || currentPlayer !== playerSymbol) {
                 return;
             }
 
@@ -583,15 +603,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (condition) {
                     roundWon = true;
-                    winningCombo = [a, b, c];
+                    winningCombo = winningConditions[i];
                     break;
                 }
             }
 
             if (roundWon) {
-                soundManager.play('win');
                 handleWin(currentPlayer, winningCombo, scores);
                 gameActive = false;
+                soundManager.play('win');
                 return;
             }
 
@@ -602,9 +622,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Switch to AI's turn
             currentPlayer = aiPlayer;
             updateTurnIndicator();
+            updateCellsInteractivity();
 
             // Make AI move after a short delay
             setTimeout(makeAIMove, 500);
@@ -771,50 +791,48 @@ document.addEventListener('DOMContentLoaded', () => {
         isMultiplayer = false;
         isSinglePlayer = true;
         aiDifficulty = 'easy';
-        gameActive = true;
-        currentPlayer = 'X';
-        gameState = ['', '', '', '', '', '', '', '', ''];
-        scores = { X: 0, O: 0, draws: 0 };
-        showScreen(gameScreen);
-        updateTurnIndicator();
-        updateCellsInteractivity();
-        updateScoreDisplay();
-        resetGameUI();
-
-        // Fetch updated user stats when starting a new game
-        const username = ticTacToeClient.getSavedUsername();
-        if (username) {
-            ticTacToeClient.getUserStats(username);
-        }
+        showScreen(symbolScreen);
     });
 
     normalDifficultyBtn.addEventListener('click', () => {
         isMultiplayer = false;
         isSinglePlayer = true;
         aiDifficulty = 'normal';
-        gameActive = true;
-        currentPlayer = 'X';
-        gameState = ['', '', '', '', '', '', '', '', ''];
-        scores = { X: 0, O: 0, draws: 0 };
-        showScreen(gameScreen);
-        updateTurnIndicator();
-        updateCellsInteractivity();
-        updateScoreDisplay();
-        resetGameUI();
-
-        // Fetch updated user stats when starting a new game
-        const username = ticTacToeClient.getSavedUsername();
-        if (username) {
-            ticTacToeClient.getUserStats(username);
-        }
+        showScreen(symbolScreen);
     });
 
     hardDifficultyBtn.addEventListener('click', () => {
         isMultiplayer = false;
         isSinglePlayer = true;
         aiDifficulty = 'hard';
+        showScreen(symbolScreen);
+    });
+
+    backToModeBtn.addEventListener('click', () => {
+        showScreen(gameModeScreen);
+    });
+
+    // Event listeners - Symbol screen
+    selectXBtn.addEventListener('click', () => {
+        playerSymbol = 'X';
+        aiPlayer = 'O';
+        startSinglePlayerGame();
+    });
+
+    selectOBtn.addEventListener('click', () => {
+        playerSymbol = 'O';
+        aiPlayer = 'X';
+        startSinglePlayerGame();
+    });
+
+    backToDifficultyBtn.addEventListener('click', () => {
+        showScreen(difficultyScreen);
+    });
+
+    // Helper function to start single player game
+    function startSinglePlayerGame() {
         gameActive = true;
-        currentPlayer = 'X';
+        currentPlayer = 'X'; // X always goes first
         gameState = ['', '', '', '', '', '', '', '', ''];
         scores = { X: 0, O: 0, draws: 0 };
         showScreen(gameScreen);
@@ -823,16 +841,17 @@ document.addEventListener('DOMContentLoaded', () => {
         updateScoreDisplay();
         resetGameUI();
 
+        // If AI goes first, make its move
+        if (aiPlayer === 'X') {
+            setTimeout(makeAIMove, 500);
+        }
+
         // Fetch updated user stats when starting a new game
         const username = ticTacToeClient.getSavedUsername();
         if (username) {
             ticTacToeClient.getUserStats(username);
         }
-    });
-
-    backToModeBtn.addEventListener('click', () => {
-        showScreen(gameModeScreen);
-    });
+    }
 
     // AI Player Logic
     function findBestMove() {
@@ -844,7 +863,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (aiWinningMove !== -1) return aiWinningMove;
 
         // 2. Check if opponent is about to win and block it
-        const opponentWinningMove = findWinningMove('X');
+        const opponentWinningMove = findWinningMove(playerSymbol);
         if (opponentWinningMove !== -1) return opponentWinningMove;
 
         // Different strategies based on difficulty
@@ -859,7 +878,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (strategicMove !== -1) return strategicMove;
 
                 // Take center if available
-                if (gameState[4] === '') return 4;
+                if (gameState.every(space => space === '')) { // first move
+                    // Randomly decide whether to take the center or a random available space
+                    return Math.random() > 0.5 ? 4 : availableSpaces[Math.floor(Math.random() * availableSpaces.length)];
+                } else if (gameState[4] === '') {
+                    // If center is available and it's not the first move, take the center
+                    return 4;
+                }
 
                 // Take corners
                 const corners = [0, 2, 6, 8];
@@ -1041,7 +1066,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (condition) {
                     roundWon = true;
-                    winningCombo = [a, b, c];
+                    winningCombo = winningConditions[i];
                     break;
                 }
             }
@@ -1059,8 +1084,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            currentPlayer = 'X';
+            // Switch to player's turn
+            currentPlayer = playerSymbol;
             updateTurnIndicator();
+            updateCellsInteractivity();
+            updateGameStatus();
         }
     }
 
