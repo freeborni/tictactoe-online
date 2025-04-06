@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tic-tac-toe-v1';
+const CACHE_NAME = 'tic-tac-toe-v2';
 const urlsToCache = [
     '/',
     '/index.html',
