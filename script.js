@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const welcomeScreen = document.getElementById('welcome-screen');
     const homeScreen = document.getElementById('home-screen');
     const gameModeScreen = document.getElementById('game-mode-screen');
+    const difficultyScreen = document.getElementById('difficulty-screen');
     const waitingScreen = document.getElementById('waiting-screen');
     const gameScreen = document.getElementById('game-screen');
     const leaderboardScreen = document.getElementById('leaderboard-screen');
@@ -39,6 +40,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const singlePlayerBtn = document.getElementById('single-player-btn');
     const multiplayerBtn = document.getElementById('multiplayer-btn');
     const backToHomeFromModeBtn = document.getElementById('back-to-home-from-mode-btn');
+
+    // DOM elements - Difficulty screen
+    const easyDifficultyBtn = document.getElementById('easy-difficulty-btn');
+    const normalDifficultyBtn = document.getElementById('normal-difficulty-btn');
+    const hardDifficultyBtn = document.getElementById('hard-difficulty-btn');
+    const backToModeBtn = document.getElementById('back-to-mode-btn');
 
     // DOM elements - Waiting screen
     const roomIdDisplay = document.getElementById('room-id-display');
@@ -105,6 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let isMultiplayer = true;
     let isSinglePlayer = false;
     let aiPlayer = 'O'; // AI will always play as O
+    let aiDifficulty = 'normal'; // Default difficulty
     
     // Winning combinations
     const winningConditions = [
@@ -320,15 +328,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Show a specific screen and hide others
     function showScreen(screenToShow) {
-        [welcomeScreen, homeScreen, gameModeScreen, waitingScreen, gameScreen, leaderboardScreen].forEach(screen => {
+        [welcomeScreen, homeScreen, gameModeScreen, difficultyScreen, waitingScreen, gameScreen, leaderboardScreen].forEach(screen => {
             if (screen === screenToShow) {
                 screen.classList.remove('hidden');
                 if (screen === gameScreen) {
                     if (isSinglePlayer) {
                         const username = ticTacToeClient.getSavedUsername() || 'Player';
-                        gamePlayers.textContent = `${username} vs Computer`;
+                        gamePlayers.textContent = `${username} vs Computer (${aiDifficulty})`;
                         document.getElementById('player-x').textContent = username;
-                        document.getElementById('player-o').textContent = 'Computer';
+                        document.getElementById('player-o').textContent = `Computer (${aiDifficulty})`;
                         chatWidget.classList.add('hidden');
                     } else {
                         const players = ticTacToeClient.room.players;
@@ -724,8 +732,25 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Event listeners - Game mode screen
     singlePlayerBtn.addEventListener('click', () => {
+        showScreen(difficultyScreen);
+    });
+
+    multiplayerBtn.addEventListener('click', () => {
+        isMultiplayer = true;
+        isSinglePlayer = false;
+        ticTacToeClient.createRoom();
+        showScreen(waitingScreen);
+    });
+
+    backToHomeFromModeBtn.addEventListener('click', () => {
+        showScreen(homeScreen);
+    });
+
+    // Event listeners - Difficulty screen
+    easyDifficultyBtn.addEventListener('click', () => {
         isMultiplayer = false;
         isSinglePlayer = true;
+        aiDifficulty = 'easy';
         gameActive = true;
         currentPlayer = 'X';
         gameState = ['', '', '', '', '', '', '', '', ''];
@@ -743,15 +768,50 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    multiplayerBtn.addEventListener('click', () => {
-        isMultiplayer = true;
-        isSinglePlayer = false;
-        ticTacToeClient.createRoom();
-        showScreen(waitingScreen);
+    normalDifficultyBtn.addEventListener('click', () => {
+        isMultiplayer = false;
+        isSinglePlayer = true;
+        aiDifficulty = 'normal';
+        gameActive = true;
+        currentPlayer = 'X';
+        gameState = ['', '', '', '', '', '', '', '', ''];
+        scores = { X: 0, O: 0, draws: 0 };
+        showScreen(gameScreen);
+        updateTurnIndicator();
+        updateCellsInteractivity();
+        updateScoreDisplay();
+        resetGameUI();
+
+        // Fetch updated user stats when starting a new game
+        const username = ticTacToeClient.getSavedUsername();
+        if (username) {
+            ticTacToeClient.getUserStats(username);
+        }
     });
 
-    backToHomeFromModeBtn.addEventListener('click', () => {
-        showScreen(homeScreen);
+    hardDifficultyBtn.addEventListener('click', () => {
+        isMultiplayer = false;
+        isSinglePlayer = true;
+        aiDifficulty = 'hard';
+        gameActive = true;
+        currentPlayer = 'X';
+        gameState = ['', '', '', '', '', '', '', '', ''];
+        scores = { X: 0, O: 0, draws: 0 };
+        showScreen(gameScreen);
+        updateTurnIndicator();
+        updateCellsInteractivity();
+        updateScoreDisplay();
+        resetGameUI();
+
+        // Fetch updated user stats when starting a new game
+        const username = ticTacToeClient.getSavedUsername();
+        if (username) {
+            ticTacToeClient.getUserStats(username);
+        }
+    });
+
+    backToModeBtn.addEventListener('click', () => {
+        showScreen(gameModeScreen);
     });
 
     // AI Player Logic
@@ -764,27 +824,53 @@ document.addEventListener('DOMContentLoaded', () => {
         const opponentWinningMove = findWinningMove('X');
         if (opponentWinningMove !== -1) return opponentWinningMove;
 
-        // 3. Look for moves that create winning opportunities
-        const strategicMove = findStrategicMove();
-        if (strategicMove !== -1) return strategicMove;
+        // Different strategies based on difficulty
+        switch (aiDifficulty) {
+            case 'easy':
+                // For easy difficulty, make a random move
+                const availableSpaces = gameState.map((space, index) => space === '' ? index : -1).filter(index => index !== -1);
+                return availableSpaces[Math.floor(Math.random() * availableSpaces.length)];
 
-        // 4. Use minimax to find the best move
-        const minimaxMove = findMinimaxMove();
-        if (minimaxMove !== -1) return minimaxMove;
+            case 'normal':
+                // For normal difficulty, use strategic moves but no minimax
+                const strategicMove = findStrategicMove();
+                if (strategicMove !== -1) return strategicMove;
 
-        // 5. Take center if available
-        if (gameState[4] === '') return 4;
+                // Take center if available
+                if (gameState[4] === '') return 4;
 
-        // 6. Take corners
-        const corners = [0, 2, 6, 8];
-        const availableCorners = corners.filter(corner => gameState[corner] === '');
-        if (availableCorners.length > 0) {
-            return availableCorners[Math.floor(Math.random() * availableCorners.length)];
+                // Take corners
+                const corners = [0, 2, 6, 8];
+                const availableCorners = corners.filter(corner => gameState[corner] === '');
+                if (availableCorners.length > 0) {
+                    return availableCorners[Math.floor(Math.random() * availableCorners.length)];
+                }
+
+                // Pick a random available spot
+                return availableSpaces[Math.floor(Math.random() * availableSpaces.length)];
+
+            case 'hard':
+                // For hard difficulty, use minimax
+                const minimaxMove = findMinimaxMove();
+                if (minimaxMove !== -1) return minimaxMove;
+
+                // Fallback to strategic moves if minimax fails
+                const hardStrategicMove = findStrategicMove();
+                if (hardStrategicMove !== -1) return hardStrategicMove;
+
+                // Take center if available
+                if (gameState[4] === '') return 4;
+
+                // Take corners
+                const hardCorners = [0, 2, 6, 8];
+                const hardAvailableCorners = hardCorners.filter(corner => gameState[corner] === '');
+                if (hardAvailableCorners.length > 0) {
+                    return hardAvailableCorners[Math.floor(Math.random() * hardAvailableCorners.length)];
+                }
+
+                // Pick a random available spot
+                return availableSpaces[Math.floor(Math.random() * availableSpaces.length)];
         }
-
-        // 7. Pick a random available spot
-        const availableSpaces = gameState.map((space, index) => space === '' ? index : -1).filter(index => index !== -1);
-        return availableSpaces[Math.floor(Math.random() * availableSpaces.length)];
     }
 
     function findWinningMove(player) {
