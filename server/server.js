@@ -290,6 +290,28 @@ io.on('connection', (socket) => {
         }
     });
 
+    // Handle user stats update
+    socket.on('updateUserStats', async ({ username, didWin, isDraw }) => {
+        try {
+            if (!username) {
+                socket.emit('error', { message: 'Username is required' });
+                return;
+            }
+
+            // Update the user's stats in the database
+            await db.updateUserStats(username, didWin, isDraw);
+
+            // Get the updated stats
+            const updatedStats = await db.getUserStats(username);
+
+            // Send the updated stats back to the client
+            socket.emit('userStats', updatedStats);
+        } catch (error) {
+            console.error('Error updating user stats:', error);
+            socket.emit('error', { message: 'Failed to update user stats' });
+        }
+    });
+
     // Handle chat messages
     socket.on('chatMessage', (data) => {
         const { roomId, message, username } = data;

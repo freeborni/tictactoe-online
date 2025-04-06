@@ -1,5 +1,11 @@
-// Register Service Worker for PWA support
-if ('serviceWorker' in navigator) {
+if ((location.hostname == 'localhost' || location.hostname == '127.0.0.1') && 'serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then((registrations) => {
+        for (let registration of registrations) {
+            registration.unregister();
+        }
+    });
+} else if ('serviceWorker' in navigator) {
+    // Register Service Worker for PWA support
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js')
             .then(registration => {
@@ -20,11 +26,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const waitingScreen = document.getElementById('waiting-screen');
     const gameScreen = document.getElementById('game-screen');
     const leaderboardScreen = document.getElementById('leaderboard-screen');
-    
+
     // DOM elements - Welcome screen
     const usernameInput = document.getElementById('username-input');
     const enterGameBtn = document.getElementById('enter-game-btn');
-    
+
     // DOM elements - Home screen
     const userWins = document.getElementById('user-wins');
     const userLosses = document.getElementById('user-losses');
@@ -35,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const roomIdInput = document.getElementById('room-id-input');
     const connectionStatus = document.getElementById('connection-status');
     const viewLeaderboardBtn = document.getElementById('view-leaderboard-btn');
-    
+
     // DOM elements - Game mode screen
     const singlePlayerBtn = document.getElementById('single-player-btn');
     const multiplayerBtn = document.getElementById('multiplayer-btn');
@@ -68,11 +74,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const resetButton = document.getElementById('reset-btn');
     const leaveGameBtn = document.getElementById('leave-game-btn');
     const gamePlayers = document.getElementById('game-players');
-    
+
     // DOM elements - Notification
     const notificationToast = document.getElementById('notification-toast');
     const notificationMessage = document.getElementById('notification-message');
-    
+
     // DOM elements - Chat
     const chatWidget = document.getElementById('chat-widget');
     const chatWindow = document.getElementById('chat-window');
@@ -113,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let isSinglePlayer = false;
     let aiPlayer = 'O'; // AI will always play as O
     let aiDifficulty = 'normal'; // Default difficulty
-    
+
     // Winning combinations
     const winningConditions = [
         [0, 1, 2], // Top row
@@ -125,24 +131,24 @@ document.addEventListener('DOMContentLoaded', () => {
         [0, 4, 8], // Diagonal top-left to bottom-right
         [2, 4, 6]  // Diagonal top-right to bottom-left
     ];
-    
+
     // Messages
     const winningMessage = (symbol, isYou) => isYou ? `You won!` : `Player ${symbol} won!`;
     const drawMessage = () => `Game ended in a draw!`;
     const currentPlayerTurn = (symbol) => `Player ${symbol}'s turn` + (ticTacToeClient.getMySymbol() === symbol ? ' (you)' : '');
     const waitingForOpponent = () => `Waiting for opponent...`;
     const opponentDisconnected = () => `Opponent disconnected`;
-    
+
     // Initialize the Socket.IO client
     ticTacToeClient.init()
         .then(() => {
             // Update connection status
             connectionStatus.textContent = 'Connected to server';
             connectionStatus.classList.add('text-green-500');
-            
+
             // Set up event handlers for Socket.IO events
             setupSocketEventHandlers();
-            
+
             // Set up chat event handlers
             ticTacToeClient.on('onChatMessage', (message) => {
                 addChatMessage(message.username, message.message);
@@ -162,10 +168,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Fetch user stats
                 ticTacToeClient.getUserStats(savedUsername);
             }
-            
+
             // Fetch leaderboard
             ticTacToeClient.getLeaderboard();
-            
+
             // Enable buttons
             createRoomBtn.disabled = false;
             joinRoomBtn.disabled = false;
@@ -175,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
             connectionStatus.textContent = 'Connection failed';
             connectionStatus.classList.add('text-red-500');
         });
-    
+
     // Set up Socket.IO event handlers
     function setupSocketEventHandlers() {
         // Connection events
@@ -183,12 +189,23 @@ document.addEventListener('DOMContentLoaded', () => {
             updateConnectionStatus(true);
             showNotification('Connected to server');
         });
-        
+
         ticTacToeClient.on('onDisconnect', () => {
             updateConnectionStatus(false);
             showNotification('Disconnected from server');
         });
-        
+
+        // Error handling
+        ticTacToeClient.on('onError', (data) => {
+            showNotification(`Error: ${data.message}`, true);
+            // If the error is related to joining a room, go back to home screen
+            if (data.message.includes('Room not found') ||
+                data.message.includes('Room is full') ||
+                data.message.includes('Failed to join room')) {
+                showScreen(homeScreen);
+            }
+        });
+
         // User stats
         ticTacToeClient.on('onUserStats', (data) => {
             if (data) {
@@ -196,28 +213,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 userWins.textContent = data.wins || 0;
                 userLosses.textContent = data.losses || 0;
                 userDraws.textContent = data.draws || 0;
-                
+
                 // Show username
                 if (data.username) {
                     usernameDisplay.textContent = data.username;
                 }
             }
         });
-        
+
         // Leaderboard
         ticTacToeClient.on('onLeaderboard', (data) => {
             if (data && Array.isArray(data)) {
                 updateLeaderboard(data);
             }
         });
-        
+
         // Room events
         ticTacToeClient.on('onRoomCreated', (data) => {
             roomIdDisplay.textContent = data.roomId;
             gameRoomId.textContent = data.roomId;
             showScreen(waitingScreen);
         });
-        
+
         ticTacToeClient.on('onRoomJoined', (data) => {
             resetButton.click(); // reset the game
             gameRoomId.textContent = data.roomId;
@@ -225,23 +242,23 @@ document.addEventListener('DOMContentLoaded', () => {
             showScreen(gameScreen);
             showNotification('Joined game room');
         });
-        
+
         ticTacToeClient.on('onPlayerJoined', (data) => {
             updateGameState(data.room);
             showScreen(gameScreen);
             showNotification('Opponent joined the game');
         });
-        
+
         // Game events
         ticTacToeClient.on('onMoveMade', (data) => {
             const { cellIndex, roomState, result } = data;
-            
+
             // Update the game state
             updateGameState(roomState);
-            
+
             // Update the UI
             updateCellUI(cellIndex, roomState.gameState[cellIndex]);
-            
+
             // Play move sound for both players
             soundManager.play('move');
 
@@ -256,24 +273,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 handleDraw(result.scores);
             }
         });
-        
+
         ticTacToeClient.on('onGameReset', (data) => {
             updateGameState(data.roomState);
             resetGameUI();
             showNotification('Game reset');
         });
-        
+
         ticTacToeClient.on('onPlayerDisconnected', (data) => {
             if (data.roomState) {
                 updateGameState(data.roomState);
             }
             gameStatus.textContent = opponentDisconnected();
             showNotification('Opponent disconnected');
-        });
-        
-        // Error handling
-        ticTacToeClient.on('onError', (data) => {
-            showNotification(`Error: ${data.message}`, true);
         });
 
         // Chat events
@@ -295,7 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-    
+
     // Update connection status UI
     function updateConnectionStatus(isConnected) {
         if (isConnected) {
@@ -306,11 +318,11 @@ document.addEventListener('DOMContentLoaded', () => {
             connectionBadge.innerHTML = '<span class="h-2 w-2 rounded-full bg-red-500 mr-1"></span>Disconnected';
         }
     }
-    
+
     // Show notification toast
     function showNotification(message, isError = false) {
         notificationMessage.textContent = message;
-        
+
         if (isError) {
             notificationToast.classList.add('bg-red-600');
             notificationToast.classList.remove('bg-gray-800');
@@ -318,9 +330,9 @@ document.addEventListener('DOMContentLoaded', () => {
             notificationToast.classList.add('bg-gray-800');
             notificationToast.classList.remove('bg-red-600');
         }
-        
+
         notificationToast.classList.add('notification-show');
-        
+
         setTimeout(() => {
             notificationToast.classList.remove('notification-show');
         }, 3000);
@@ -351,22 +363,22 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-    
+
     // Update game state from server data
     function updateGameState(roomState) {
         if (!roomState) return;
-        
+
         gameState = roomState.gameState;
         currentPlayer = roomState.currentPlayer;
         gameActive = roomState.gameActive;
         scores = roomState.scores || { X: 0, O: 0, draws: 0 };
-        
+
         // Update UI
         updateScoreDisplay();
         updateTurnIndicator();
         updateCellsInteractivity();
     }
-    
+
     // Update turn indicator
     function updateTurnIndicator() {
         if (isSinglePlayer) {
@@ -388,7 +400,7 @@ document.addEventListener('DOMContentLoaded', () => {
             gameStatus.classList.add('animate-pulse');
         }
     }
-    
+
     // Update cells interactivity based on whose turn it is
     function updateCellsInteractivity() {
         if (isMultiplayer) {
@@ -410,14 +422,14 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     }
-    
+
     // Update a single cell's UI
     function updateCellUI(cellIndex, symbol) {
         const cell = cells[cellIndex];
-        
+
         // Update UI with player mark
         cell.textContent = symbol;
-        
+
         // Apply color based on player
         cell.classList.remove('text-blue-600', 'text-red-600', 'x', 'o');
         if (symbol === 'X') {
@@ -426,7 +438,7 @@ document.addEventListener('DOMContentLoaded', () => {
             cell.classList.add('o');
         }
     }
-    
+
     // Reset the game UI
     function resetGameUI() {
         // Clear the board
@@ -435,7 +447,7 @@ document.addEventListener('DOMContentLoaded', () => {
             cell.classList.remove('bg-green-200', 'text-blue-600', 'text-red-600', 'x', 'o', 'animate-pulse');
             cell.classList.add('bg-white');
         });
-        
+
         // Update UI
         gameStatus.textContent = '';
         gameStatus.classList.remove('animate-pulse');
@@ -443,19 +455,19 @@ document.addEventListener('DOMContentLoaded', () => {
         updateCellsInteractivity();
         updateYourPlayerIcon(); // update your own user icon
     }
-    
+
     // Handle win condition
     function handleWin(winner, winningCombo, updatedScores) {
         const isYou = isSinglePlayer ? winner === 'X' : ticTacToeClient.getMySymbol() === winner;
         gameStatus.textContent = winningMessage(winner, isYou);
         gameStatus.classList.add('animate-pulse');
-        
+
         // Highlight winning cells
         winningCombo.forEach(index => {
             cells[index].classList.remove('bg-white');
             cells[index].classList.add('bg-green-200', 'animate-pulse');
         });
-        
+
         // Update score
         if (isSinglePlayer) {
             // In single player mode, update scores locally
@@ -465,20 +477,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 scores.O = (scores.O || 0) + 1;
             }
         } else {
-        // In multiplayer mode, use server scores
+            // In multiplayer mode, use server scores
             scores = updatedScores || scores;
         }
         updateScoreDisplay();
 
-        // Update user stats in single player mode
-        if (isSinglePlayer) {
-            const username = ticTacToeClient.getSavedUsername();
-            if (username) {
+        // Update stats based on game mode
+        const username = ticTacToeClient.getSavedUsername();
+        if (username) {
+            if (isSinglePlayer) {
+            // In single player mode, only update human player stats
                 if (winner === 'X') {
-                    // User won
+                    // Human won
                     ticTacToeClient.updateUserStats(username, 1, 0, 0);
                 } else {
                     // Computer won
+                    ticTacToeClient.updateUserStats(username, 0, 1, 0);
+                }
+            } else {
+                // In multiplayer mode, update both players' stats
+                if (winner === ticTacToeClient.getMySymbol()) {
+                    // Current player won
+                    ticTacToeClient.updateUserStats(username, 1, 0, 0);
+                } else {
+                    // Opponent won
                     ticTacToeClient.updateUserStats(username, 0, 1, 0);
                 }
             }
@@ -486,7 +508,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         updateCellsInteractivity();
     }
-    
+
     // Handle draw condition
     function handleDraw(updatedScores) {
         gameStatus.textContent = drawMessage();
@@ -497,27 +519,25 @@ document.addEventListener('DOMContentLoaded', () => {
             // In single player mode, update scores locally
             scores.draws = (scores.draws || 0) + 1;
         } else {
-        // In multiplayer mode, use server scores
+            // In multiplayer mode, use server scores
             scores = updatedScores || scores;
         }
         updateScoreDisplay();
 
-        // Update user stats in single player mode
-        if (isSinglePlayer) {
-            const username = ticTacToeClient.getSavedUsername();
-            if (username) {
-                ticTacToeClient.updateUserStats(username, 0, 0, 1);
-            }
+        // Update stats based on game mode
+        const username = ticTacToeClient.getSavedUsername();
+        if (username) {
+            ticTacToeClient.updateUserStats(username, 0, 0, 1);
         }
 
         updateCellsInteractivity();
     }
-    
+
     // Update score display
     function updateScoreDisplay() {
         scoreX.textContent = scores.X || 0;
         scoreO.textContent = scores.O || 0;
-        
+
         // Update draws count
         if (scores.draws !== undefined) {
             scoreDraws.textContent = scores.draws;
@@ -530,7 +550,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     }
-    
+
     // Handle cell click
     function handleCellClick(clickedCellEvent) {
         const clickedCell = clickedCellEvent.target;
@@ -546,13 +566,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (gameState[clickedCellIndex] !== '' || !gameActive || currentPlayer !== 'X') {
                 return;
             }
-            
+
             soundManager.play('move');
 
             // Update game state and UI
             gameState[clickedCellIndex] = currentPlayer;
             updateCellUI(clickedCellIndex, currentPlayer);
-            
+
             // Check for win or draw
             let roundWon = false;
             let winningCombo = [];
@@ -560,7 +580,7 @@ document.addEventListener('DOMContentLoaded', () => {
             for (let i = 0; i < winningConditions.length; i++) {
                 const [a, b, c] = winningConditions[i];
                 const condition = gameState[a] && gameState[a] === gameState[b] && gameState[a] === gameState[c];
-                
+
                 if (condition) {
                     roundWon = true;
                     winningCombo = [a, b, c];
@@ -581,7 +601,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 gameActive = false;
                 return;
             }
-            
+
             // Switch to AI's turn
             currentPlayer = aiPlayer;
             updateTurnIndicator();
@@ -590,14 +610,14 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(makeAIMove, 500);
         }
     }
-    
+
     // Update leaderboard display
     function updateLeaderboard(players) {
         if (!players || players.length === 0) {
             leaderboardContent.innerHTML = '<div class="text-center text-gray-500 py-2">No players found</div>';
             return;
         }
-        
+
         // Filter out computer players
         const humanPlayers = players.filter(player => player.username !== 'Computer');
 
@@ -608,7 +628,7 @@ document.addEventListener('DOMContentLoaded', () => {
         html += '<th class="text-center py-2">Losses</th>';
         html += '<th class="text-center py-2">Draws</th>';
         html += '</tr></thead><tbody>';
-        
+
         humanPlayers.forEach((player, index) => {
             html += `<tr class="${index % 2 === 0 ? 'bg-gray-50' : ''}">`;
             html += `<td class="py-2">${player.username}</td>`;
@@ -617,7 +637,7 @@ document.addEventListener('DOMContentLoaded', () => {
             html += `<td class="text-center py-2">${player.draws || 0}</td>`;
             html += '</tr>';
         });
-        
+
         html += '</tbody></table>';
         leaderboardContent.innerHTML = html;
     }
@@ -628,10 +648,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (username) {
             ticTacToeClient.saveUsername(username);
             ticTacToeClient.getUserStats(username);
-            
+
             // Update username display
             usernameDisplay.textContent = username;
-            
+
             showScreen(homeScreen);
         } else {
             showNotification('Please enter a username', true);
@@ -650,31 +670,31 @@ document.addEventListener('DOMContentLoaded', () => {
             playerOIcon.classList.remove('hidden');
         }
     }
-    
+
     // Event listeners - Leaderboard screen
     cancelWaitBtn.addEventListener('click', () => {
         showScreen(homeScreen);
     });
-    
+
     // Event listeners - Home screen
     viewLeaderboardBtn.addEventListener('click', () => {
         ticTacToeClient.getLeaderboard();
         showScreen(leaderboardScreen);
     });
-    
+
     createRoomBtn.addEventListener('click', () => {
         showScreen(gameModeScreen);
     });
-    
+
     joinRoomBtn.addEventListener('click', () => {
-        isMultiplayer = true;
-        isSinglePlayer = false;
         const roomId = roomIdInput.value.trim().toUpperCase();
         const username = usernameInput.value.trim();
 
+        isMultiplayer = true;
+        isSinglePlayer = false;
         ticTacToeClient.joinRoom(roomId, username);
     });
-    
+
     // Event listeners - Waiting screen
     copyRoomIdBtn.addEventListener('click', () => {
         const roomId = roomIdDisplay.textContent;
@@ -690,7 +710,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 showNotification('Failed to copy room ID', true);
             });
     });
-    
+
     cancelWaitBtn.addEventListener('click', () => {
         ticTacToeClient.leaveRoom();
         showScreen(homeScreen);
@@ -700,7 +720,7 @@ document.addEventListener('DOMContentLoaded', () => {
     backToHomeBtn.addEventListener('click', () => {
         showScreen(homeScreen);
     });
-    
+
     // Event listeners - Game screen
     resetButton.addEventListener('click', () => {
         if (isMultiplayer) {
@@ -713,23 +733,23 @@ document.addEventListener('DOMContentLoaded', () => {
             updateTurnIndicator();
         }
     });
-    
+
     leaveGameBtn.addEventListener('click', () => {
         ticTacToeClient.leaveRoom();
         showScreen(homeScreen);
         showNotification('Left game room');
     });
-    
+
     cells.forEach(cell => {
         cell.addEventListener('click', handleCellClick);
     });
-    
+
     // Set up additional Socket.IO event handlers
     ticTacToeClient.on('onRoomLeft', () => {
         // This event is triggered when the player leaves a room
         showNotification('Left the room');
     });
-    
+
     // Event listeners - Game mode screen
     singlePlayerBtn.addEventListener('click', () => {
         showScreen(difficultyScreen);
@@ -816,6 +836,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // AI Player Logic
     function findBestMove() {
+        // Get available spaces first
+        const availableSpaces = gameState.map((space, index) => space === '' ? index : -1).filter(index => index !== -1);
+
         // 1. Check if AI can win
         const aiWinningMove = findWinningMove(aiPlayer);
         if (aiWinningMove !== -1) return aiWinningMove;
@@ -828,7 +851,6 @@ document.addEventListener('DOMContentLoaded', () => {
         switch (aiDifficulty) {
             case 'easy':
                 // For easy difficulty, make a random move
-                const availableSpaces = gameState.map((space, index) => space === '' ? index : -1).filter(index => index !== -1);
                 return availableSpaces[Math.floor(Math.random() * availableSpaces.length)];
 
             case 'normal':

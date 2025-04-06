@@ -279,6 +279,11 @@ class TicTacToeClient {
             });
         }
     }
+
+    // Update user stats
+    updateUserStats(username, didWin, isDraw = false) {
+        this.socket.emit('updateUserStats', { username, didWin, isDraw });
+    }
 }
 
 // Create a global instance
