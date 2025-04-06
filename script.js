@@ -410,9 +410,23 @@ document.addEventListener('DOMContentLoaded', () => {
     // Update turn indicator
     function updateTurnIndicator() {
         if (isSinglePlayer) {
-            playerTurn.textContent = currentPlayer === playerSymbol ? 'Your turn' : "Computer's turn";
+            if (currentPlayer === playerSymbol) {
+                playerTurn.textContent = 'Your turn';
+                gameStatus.textContent = 'Your turn...';
+            } else {
+                playerTurn.textContent = "Computer's turn";
+                gameStatus.textContent = "Computer is thinking...";
+            }
         } else {
-            playerTurn.textContent = currentPlayerTurn(currentPlayer);
+            // Multiplayer mode
+            const isMyTurn = ticTacToeClient.isMyTurn();
+            if (isMyTurn) {
+                playerTurn.textContent = 'Your turn';
+                gameStatus.textContent = 'Your turn...';
+            } else {
+                playerTurn.textContent = "Opponent's turn";
+                gameStatus.textContent = "Waiting for opponent...";
+            }
         }
     }
 
@@ -1088,7 +1102,6 @@ document.addEventListener('DOMContentLoaded', () => {
             currentPlayer = playerSymbol;
             updateTurnIndicator();
             updateCellsInteractivity();
-            updateGameStatus();
         }
     }
 
